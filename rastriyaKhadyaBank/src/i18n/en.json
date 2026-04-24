@@ -1,0 +1,119 @@
+{
+  "topbar": {
+    "email": "rastriyakhadyabank@gmail.com",
+    "address": "Madhyapur Thimi -02, Divyashwori Planning",
+    "language": "ENG"
+  },
+  "navbar": {
+    "home": "Home",
+    "products": "Products",
+    "about": "About",
+    "contact": "Contact",
+    "cart": "Cart"
+  },
+  "pages": {
+    "home": {
+      "title": "Welcome to Rastriya Khadya Bank",
+      "subtitle": "Quality Food Products",
+      "description": "Explore our wide range of quality food products"
+    },
+    "products": {
+      "title": "Our Products",
+      "viewDetails": "View Details",
+      "addToCart": "Add to Cart"
+    },
+    "about": {
+      "title": "About Us",
+      "description": "We are committed to providing the best quality food products",
+      "breadcrumb": "Home > About Us",
+      "tagline": "Sustainable Agriculture is Our Mission",
+      "pillarsTitle": "Our Values & Objectives",
+      "objective": "Objective",
+      "objectiveText": "To produce, store, and market agricultural goods produced by farmers, thereby increasing their income. We promote traditional best practices in agriculture while also developing new technologies to protect the environment and maintain biodiversity.",
+      "goal": "Goal",
+      "goalText": "To make the agriculture profession honourable and dignified, and to make the country self-sufficient in food. The bank will run campaigns for food self-sufficiency using short, medium, and long-term plans covering production, safe storage, distribution, and research.",
+      "mission": "Mission",
+      "missionText": "To create an environment where sufficient and affordable food is produced for every individual and farmers earn fair income. Programs will be run in coordination with farmers, agricultural groups, communities, and the private sector.",
+      "vision": "Vision",
+      "visionText": "To provide environmentally friendly, sustainable, and nutritious food at the national level. To improve agricultural production and sustainable food systems while building a prosperous and food-secure Nepal.",
+      "whyTitle": "Why is Rastriya Khadya Bank Needed?",
+      "whySubtitle": "Why Rastriya Khadya Bank is needed",
+      "why": [
+        "To produce organic agricultural goods (Safe Food).",
+        "To reduce dependency and become self-reliant.",
+        "To keep money spent on agricultural imports within the country.",
+        "To create widespread employment.",
+        "To contribute to GDP through large-scale production.",
+        "To connect agriculture and tourism.",
+        "To raise public awareness about nutritious food and nutrition.",
+        "To protect the ecosystem and conserve the environment.",
+        "To develop human resources needed for agriculture.",
+        "To produce and manage agricultural tools.",
+        "To earn income by selling surplus agricultural goods in international markets."
+      ],
+      "whoInvolvedTitle": "Who is Involved?",
+      "whoInvolvedSubtitle": "Who are involved",
+      "whoInvolvedText": "Agricultural experts, cooperatives, private limited companies, individuals interested in investing in agriculture, and people who studied farming in Korea, Israel, Japan, and China have come together with a capital of two billion rupees. The bank was founded by 590 people with the aim of working in all 77 districts and 753 local bodies across Nepal, handling production, storage, and distribution.",
+      "currentOpsTitle": "Where and What Are We Working On Now?",
+      "currentOpsSubtitle": "Current Operations",
+      "currentOpsIntro": "As a pilot project, Rastriya Khadya Bank is engaged in production activities in collaboration with farmers, cooperatives, and private companies.",
+      "opsA": "Jhapa, Morang, Sunsari: As a pilot project, 55 bigha of land has been leased in Gauradaha Municipality Ward No. 2 and 7. Additionally, local Basmati paddy is being grown on 405 bigha in collaboration with farmers.",
+      "opsB": "Banke, Bardiya, Kailali, Kanchanpur: Paddy farming is underway on 60 bigha in Gulariya Municipality-3, Khairi, and 503 bigha of paddy is being grown through farmer cooperation.",
+      "whoForTitle": "Who is Rastriya Khadya Bank For?",
+      "whoForSubtitle": "Who is it for",
+      "whoForIntro": "This bank is for all of us — to make agriculture dignified, to make it a source of respectable income, and to teach people to live with pride and self-reliance.",
+      "whoFor": [
+        "For the poor and disadvantaged people living below the poverty line.",
+        "For hard-working farmers.",
+        "For all communities engaged in production work.",
+        "For agricultural experts, specialists, and technicians.",
+        "For all types of people — IT, management, law, accounting, food & nutrition, forestry, soil and climate experts.",
+        "For all citizens dedicated to making the country self-reliant through agricultural produce.",
+        "For cooperatives, agricultural companies, and all groups engaged in production.",
+        "For semi-skilled workers — drivers, loaders, packagers, home delivery personnel.",
+        "For permanent and temporary staff, daily wage and hourly workers.",
+        "For consumers who use safe food (and eventually organic) products.",
+        "For investors who want high returns — those investing as promoter shareholders in Rastriya Khadya Bank."
+      ],
+      "closingTitle": "Nepal's First Food Bank",
+      "closingText": "Nepal's first bank exclusively for food-related work. Because one institution handles production, storage, and distribution, there is no need for middlemen — producers get full price and consumers get affordable food."
+    },
+    "contact": {
+      "title": "Contact Us",
+      "email": "Email",
+      "phone": "Phone",
+      "message": "Message",
+      "send": "Send Message"
+    }
+  },
+  "common": {
+    "language": "Language",
+    "nepali": "नेपाली",
+    "english": "English"
+  },
+  "footer": {
+    "brandName": "Rastriya Khadya Bank Limited",
+    "tagline": "- Sustainable Agriculture is Our Mission",
+    "usefulLinks": "Useful Links",
+    "usefulLink1": "Ensure quality agricultural production for farmers and make them independent and motivated",
+    "usefulLink2": "Production of all types of food items",
+    "information": "Information",
+    "infoLink1": "About Us",
+    "infoLink2": "What We Do",
+    "infoLink3": "Information",
+    "infoLink4": "Employment",
+    "infoLink5": "Notice",
+    "contact": "Contact",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "addressText": "Madhyapur Thimi -02, Divyashwori Planning",
+    "presidentLabel": "President",
+    "presidentName": "Kishor Kumar Pradhan",
+    "founderLabel": "Founder Chairman",
+    "founderName": "Shankar Nath Upreti",
+    "panLabel": "PAN",
+    "regLabel": "Reg No.",
+    "copyrightText": "| Sustainable Agriculture is Our Mission"
+  }
+}
