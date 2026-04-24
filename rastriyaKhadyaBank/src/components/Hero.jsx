@@ -4,7 +4,10 @@ import slider2 from "../assets/slider2.jpg";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const Hero = () => {
-  const images = [slider1, slider2];
+  const images = [
+    { src: slider1, position: "center" },
+    { src: slider2, position: "center" }
+  ];
   const [index, setIndex] = useState(0);
 
   // Auto-slide every 5 seconds
@@ -30,8 +33,11 @@ const Hero = () => {
   return (
     <div>
       <div
-        className="w-full h-96 md:h-[600px] bg-center bg-cover transition-all duration-700 relative overflow-hidden md:rounded-lg"
-        style={{ backgroundImage: `url(${images[index]})` }}
+        className="w-full h-64 sm:h-96 md:h-[600px] bg-no-repeat bg-cover transition-all duration-700 relative overflow-hidden md:rounded-xl shadow-lg"
+        style={{ 
+          backgroundImage: `url(${images[index].src})`,
+          backgroundPosition: images[index].position 
+        }}
       >
         {/* Overlay */}
         <div className="h-full w-full bg-black/5 flex items-center justify-between px-4 md:px-8">
@@ -61,8 +67,8 @@ const Hero = () => {
               key={slideIndex}
               onClick={() => goToSlide(slideIndex)}
               className={`w-3 h-3 rounded-full transition duration-300 ${slideIndex === index
-                  ? "bg-green-600 w-8"
-                  : "bg-white/60 hover:bg-white/80"
+                ? "bg-green-600 w-8"
+                : "bg-white/60 hover:bg-white/80"
                 }`}
               aria-label={`Go to slide ${slideIndex + 1}`}
             />

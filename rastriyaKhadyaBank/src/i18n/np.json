@@ -7,9 +7,26 @@
   "navbar": {
     "home": "गृह",
     "products": "उत्पादनहरु",
+    "gallery": "ग्यालरी",
     "about": "हाम्रो बारेमा",
     "contact": "सम्पर्क",
     "cart": "कार्ट"
+  },
+  "branding": {
+    "operatedBy": "राष्ट्रिय खाद्य बैंक लिमिटेडद्वारा संचालित",
+    "martName": "RKB MART",
+    "location": "भक्तपुर, पेप्सीकोला"
+  },
+  "auth": {
+    "login": "लगइन",
+    "register": "दर्ता गर्नुहोस्",
+    "email": "इमेल",
+    "password": "पासवर्ड",
+    "name": "पूरा नाम",
+    "loginTitle": "तपाईंको खातामा लगइन गर्नुहोस्",
+    "registerTitle": "नयाँ खाता बनाउनुहोस्",
+    "noAccount": "खाता छैन?",
+    "hasAccount": "पहिले नै खाता छ?"
   },
   "pages": {
     "home": {

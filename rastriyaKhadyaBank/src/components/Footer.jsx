@@ -39,7 +39,7 @@ export default function Footer() {
 
   /* Jankari links — only About Us */
   const infoLinks = [
-    { label: isNepali ? "हाम्रो बारेमा" : "About Us", to: "/about" },
+    { label: isNepali ? "ग्यालेरी" : "Gallery", to: "/gallery" },
   ];
 
   return (

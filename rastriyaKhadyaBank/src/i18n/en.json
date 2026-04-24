@@ -7,9 +7,26 @@
   "navbar": {
     "home": "Home",
     "products": "Products",
+    "gallery": "Gallery",
     "about": "About",
     "contact": "Contact",
     "cart": "Cart"
+  },
+  "branding": {
+    "operatedBy": "Operated by Rastriya Khadya Bank Limited",
+    "martName": "RKB MART",
+    "location": "Bhaktapur, Pepsicola"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "name": "Full Name",
+    "loginTitle": "Login to your account",
+    "registerTitle": "Create a new account",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?"
   },
   "pages": {
     "home": {

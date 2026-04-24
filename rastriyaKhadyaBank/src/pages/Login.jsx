@@ -1,10 +1,12 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { FaEnvelope, FaLock, FaSignInAlt } from 'react-icons/fa';
 
 const Login = () => {
+    const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const { login } = useContext(AuthContext);
@@ -17,9 +19,9 @@ const Login = () => {
                 { withCredentials: true }
             );
             login(res.data.user);
-            alert("Welcome back!");
+            alert(t("auth.loginSuccess") || "Welcome back!");
         } catch (err) {
-            alert(err.response?.data?.message || "Login failed");
+            alert(err.response?.data?.message || t("auth.error") || "Login failed");
         }
     };
 
@@ -28,10 +30,10 @@ const Login = () => {
             <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-xl border border-gray-100">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        Log In
+                        {t("auth.login")}
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600 font-medium">
-                        Welcome back to RKB Mart
+                        {t("auth.loginTitle")}
                     </p>
                 </div>
                 <form className="mt-8 space-y-6" onSubmit={handleLogin}>
@@ -44,7 +46,7 @@ const Login = () => {
                                 type="email"
                                 required
                                 className="appearance-none rounded-xl relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                                placeholder="Email address"
+                                placeholder={t("auth.email")}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
@@ -56,7 +58,7 @@ const Login = () => {
                                 type="password"
                                 required
                                 className="appearance-none rounded-xl relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                                placeholder="Password"
+                                placeholder={t("auth.password")}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
@@ -70,15 +72,15 @@ const Login = () => {
                             <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                                 <FaSignInAlt className="text-green-500 group-hover:text-green-400" />
                             </span>
-                            Sign In
+                            {t("auth.login")}
                         </button>
                     </div>
 
                     <div className="text-center mt-4">
                         <p className="text-sm text-gray-600">
-                            Don't have an account?{' '}
+                            {t("auth.noAccount")}{' '}
                             <Link to="/register" className="font-bold text-green-600 hover:text-green-500 underline decoration-2 underline-offset-4">
-                                Register here
+                                {t("auth.register")}
                             </Link>
                         </p>
                     </div>
