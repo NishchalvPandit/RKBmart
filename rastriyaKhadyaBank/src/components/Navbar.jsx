@@ -136,12 +136,12 @@ const Navbar = () => {
                   </button>
                 </div>
               ) : (
-                <Link
-                  to="/login"
-                  className="bg-green-600 text-white text-xs lg:text-sm font-bold px-4 py-2 rounded-full hover:bg-green-700 transition shadow-sm"
-                >
-                  Login
-                </Link>
+                  <Link
+                    to="/login"
+                    className="bg-green-600 text-white text-xs lg:text-sm font-bold px-4 py-2 rounded-full hover:bg-green-700 transition shadow-sm"
+                  >
+                    {t("auth.login")}
+                  </Link>
               )}
             </div>
 
@@ -223,31 +223,31 @@ const Navbar = () => {
               </div>
               {user ? (
                 <div className="flex flex-col gap-2">
+                    <Link
+                      to="/profile"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-3 py-3 px-4 rounded-lg bg-gray-50 text-gray-700 font-semibold"
+                    >
+                      <FaUserCircle className="text-xl text-green-600" />
+                      {t("auth.profile")}
+                    </Link>
+                    <button
+                      onClick={() => { logout(); setIsMobileMenuOpen(false); navigate('/login'); }}
+                      className="flex items-center gap-3 py-3 px-4 rounded-lg text-red-600 font-semibold hover:bg-red-50 transition text-left"
+                    >
+                      <FaSignOutAlt className="text-xl" />
+                      {t("auth.logout")}
+                    </button>
+                  </div>
+                ) : (
                   <Link
-                    to="/profile"
+                    to="/login"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-3 py-3 px-4 rounded-lg bg-gray-50 text-gray-700 font-semibold"
+                    className="flex items-center justify-center bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-md"
                   >
-                    <FaUserCircle className="text-xl text-green-600" />
-                    Profile
+                    {t("auth.loginSignup")}
                   </Link>
-                  <button
-                    onClick={() => { logout(); setIsMobileMenuOpen(false); navigate('/login'); }}
-                    className="flex items-center gap-3 py-3 px-4 rounded-lg text-red-600 font-semibold hover:bg-red-50 transition text-left"
-                  >
-                    <FaSignOutAlt className="text-xl" />
-                    Logout
-                  </button>
-                </div>
-              ) : (
-                <Link
-                  to="/login"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-center bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-md"
-                >
-                  Login / Sign Up
-                </Link>
-              )}
+                )}
             </div>
 
             {/* Support Section */}

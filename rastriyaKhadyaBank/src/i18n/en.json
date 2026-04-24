@@ -26,7 +26,10 @@
     "loginTitle": "Login to your account",
     "registerTitle": "Create a new account",
     "noAccount": "Don't have an account?",
-    "hasAccount": "Already have an account?"
+    "hasAccount": "Already have an account?",
+    "logout": "Logout",
+    "profile": "Profile",
+    "loginSignup": "Login / Sign Up"
   },
   "pages": {
     "home": {
