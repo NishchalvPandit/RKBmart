@@ -10,7 +10,16 @@
     "gallery": "Gallery",
     "about": "About",
     "contact": "Contact",
-    "cart": "Cart"
+    "cart": "Cart",
+    "searchGo": "Go",
+    "myCart": "My Cart",
+    "accountSection": "Account",
+    "needHelp": "Need help?",
+    "contactSupport": "Contact Support →",
+    "adminBadge": "Admin",
+    "adminPanel": "Admin Panel",
+    "logoAlt": "Rastriya Khadya Bank Logo",
+    "toggleMenu": "Toggle navigation menu"
   },
   "branding": {
     "operatedBy": "Operated by Rastriya Khadya Bank Limited",
@@ -29,18 +38,46 @@
     "hasAccount": "Already have an account?",
     "logout": "Logout",
     "profile": "Profile",
-    "loginSignup": "Login / Sign Up"
+    "loginSignup": "Login / Sign Up",
+    "error": "Something went wrong. Please try again.",
+    "serverUnavailable": "Cannot reach server. Please make sure backend is running.",
+    "loginSuccess": "Welcome back!",
+    "registerSuccess": "Registration successful!",
+    "loggingIn": "Logging in...",
+    "creatingAccount": "Creating account...",
+    "resendVerification": "Resend verification email",
+    "resendingVerification": "Sending verification email...",
+    "resendVerificationSuccess": "Verification email sent successfully",
+    "verifyEmailAfterRegister": "Registration successful. Please check your email to verify your account.",
+    "goToLogin": "Go to Login",
+    "passwordWeak": "Password is too weak. Please follow the requirements below.",
+    "registrationFailed": "Registration failed",
+    "checkEmailTitle": "Check your email",
+    "passwordRequirementsTitle": "Password requirements",
+    "pwReqMinLen": "8+ characters",
+    "pwReqCase": "Upper & lowercase letters",
+    "pwReqNumber": "Numbers",
+    "pwReqSpecial": "Special characters"
   },
   "pages": {
     "home": {
       "title": "Welcome to Rastriya Khadya Bank",
       "subtitle": "Quality Food Products",
-      "description": "Explore our wide range of quality food products"
+      "description": "Explore our wide range of quality food products",
+      "loadingFeatured": "Loading…",
+      "featuredEmpty": "Products will appear here once available from the catalog."
     },
     "products": {
       "title": "Our Products",
       "viewDetails": "View Details",
-      "addToCart": "Add to Cart"
+      "addToCart": "Add to Cart",
+      "searchPlaceholder": "Search products…",
+      "search": "Search",
+      "clearSearch": "Clear",
+      "loading": "Loading products…",
+      "resultsFor": "Results for",
+      "noMatches": "No products found for your search. Try another keyword.",
+      "noneInCatalog": "No products available."
     },
     "about": {
       "title": "About Us",
@@ -100,16 +137,92 @@
     },
     "contact": {
       "title": "Contact Us",
+      "subtitle": "We will get back to you as soon as we can.",
+      "name": "Name",
       "email": "Email",
+      "subject": "Subject",
       "phone": "Phone",
       "message": "Message",
-      "send": "Send Message"
+      "send": "Send Message",
+      "sending": "Sending…",
+      "success": "Message sent successfully"
+    },
+    "gallery": {
+      "title": "Our Gallery",
+      "subtitle": "A look inside RKB Mart",
+      "viewFull": "View Full Image",
+      "imageAlt": "Gallery image {{count}}"
+    },
+    "cart": {
+      "title": "Shopping cart",
+      "empty": "Your cart is empty.",
+      "browseProducts": "Browse products",
+      "noImg": "No image",
+      "each": "each",
+      "qty": "Qty",
+      "line": "Line",
+      "remove": "Remove",
+      "grandTotal": "Grand total",
+      "continueShopping": "Continue shopping",
+      "proceedCheckout": "Proceed to Checkout →"
+    },
+    "checkout": {
+      "title": "Checkout",
+      "emptyCart": "Your cart is empty.",
+      "browseProducts": "Browse products",
+      "shippingInfo": "Shipping information",
+      "fullName": "Full Name *",
+      "fullNamePlaceholder": "John Doe",
+      "emailLabel": "Email *",
+      "emailPlaceholder": "you@example.com",
+      "phoneLabel": "Phone Number *",
+      "phonePlaceholder": "98XXXXXXXX",
+      "addressLabel": "Address *",
+      "addressPlaceholder": "Street / ward / area",
+      "cityLabel": "City *",
+      "cityPlaceholder": "Kathmandu",
+      "paymentMethod": "Payment method",
+      "cashOnDelivery": "Cash on Delivery",
+      "payWhenArrives": "Pay when your order arrives",
+      "placeOrder": "Place Order",
+      "placingOrder": "Placing order…",
+      "orderSummary": "Order summary",
+      "qtyPriceLine": "Qty: {{qty}} × Rs {{price}}",
+      "total": "Total",
+      "editCart": "← Edit cart",
+      "failedPlaceOrder": "Failed to place order",
+      "errorGeneric": "Something went wrong. Please try again."
+    },
+    "orderSuccess": {
+      "title": "Order placed successfully!",
+      "thankYouLead": "Thank you for shopping with",
+      "martName": "Rastriya Khadya Bank Mart",
+      "processing": "Your order has been received and is being processed.",
+      "orderId": "Order ID",
+      "continueShopping": "Continue shopping",
+      "viewOrders": "View my orders"
+    },
+    "productDetails": {
+      "loading": "Loading…",
+      "notFound": "Product not found",
+      "loadFailed": "Failed to load product",
+      "backToProducts": "Back to products",
+      "video": "Video",
+      "noVideo": "No video available",
+      "noDescription": "No description.",
+      "price": "Price",
+      "category": "Category",
+      "stock": "Stock",
+      "allProducts": "← All products",
+      "productImage": "Product image",
+      "videoCaptionLabel": "Captions"
     }
   },
   "common": {
     "language": "Language",
     "nepali": "नेपाली",
-    "english": "English"
+    "english": "English",
+    "loading": "Loading…"
   },
   "footer": {
     "brandName": "Rastriya Khadya Bank Limited",

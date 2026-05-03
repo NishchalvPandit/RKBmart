@@ -15,12 +15,15 @@ import {
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import khaltiLogo from "../assets/khaltiLogo.png";
-import esewaLogo from "../assets/esewaLogo.png";
+import {
+  footerLogo,
+  khaltiLogoResponsive,
+  esewaLogoResponsive,
+} from "../assets/brandLogos";
 
 export default function Footer() {
   const [showTop, setShowTop] = useState(false);
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     const onScroll = () => setShowTop(window.scrollY > 300);
@@ -52,9 +55,13 @@ export default function Footer() {
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <img
-                src="/logo.png"
+                {...footerLogo}
                 alt="Rastriya Khadya Bank Logo"
                 className="h-20 w-20 object-contain"
+                width={80}
+                height={80}
+                decoding="async"
+                loading="lazy"
               />
             </div>
             <div>
@@ -95,8 +102,20 @@ export default function Footer() {
                 {isNepali ? "भुक्तानी विधिहरू" : "Payment Methods"}
               </p>
               <div className="flex items-center gap-4">
-                <img src={khaltiLogo} alt="Khalti" className="h-7 object-contain" />
-                <img src={esewaLogo} alt="eSewa" className="h-7 object-contain" />
+                <img
+                  {...khaltiLogoResponsive}
+                  alt="Khalti"
+                  className="h-7 max-w-[10rem] w-auto object-contain"
+                  decoding="async"
+                  loading="lazy"
+                />
+                <img
+                  {...esewaLogoResponsive}
+                  alt="eSewa"
+                  className="h-7 max-w-[10rem] w-auto object-contain"
+                  decoding="async"
+                  loading="lazy"
+                />
               </div>
             </div>
           </div>

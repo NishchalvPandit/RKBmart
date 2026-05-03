@@ -3,10 +3,13 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FaSearch, FaShoppingCart, FaBars, FaTimes, FaUserCircle, FaSignOutAlt } from "react-icons/fa";
 import TopBar from "./TopBar";
+import { navbarLogo } from "../assets/brandLogos";
 import { AuthContext } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
+  const { itemCount } = useCart();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
@@ -44,10 +47,12 @@ const Navbar = () => {
     };
   }, [isMobileMenuOpen]);
 
-  // Close menu when route changes
-  useEffect(() => {
+  const runProductSearch = (e) => {
+    e.preventDefault();
+    const q = searchTerm.trim();
+    navigate(q ? `/products?keyword=${encodeURIComponent(q)}` : "/products");
     setIsMobileMenuOpen(false);
-  }, [location.pathname]);
+  };
 
   return (
     <>
@@ -79,9 +84,13 @@ const Navbar = () => {
               className="flex items-center gap-3 hover:opacity-80 transition cursor-pointer"
             >
               <img
-                src="/logo.png"
-                alt="Rastriya Khadya Bank Logo"
+                {...navbarLogo}
+                alt={t("navbar.logoAlt")}
                 className="h-10 w-10 md:h-12 md:w-12 object-contain"
+                width={48}
+                height={48}
+                decoding="async"
+                fetchPriority="high"
               />
               <div className="text-center xl:text-left">
                 <div className="font-bold text-green-700 text-base md:text-lg tracking-tight leading-tight">
@@ -97,29 +106,52 @@ const Navbar = () => {
           {/* Right Side: Search, Cart, Auth */}
           <div className="flex items-center gap-2 md:gap-4 flex-1 justify-end">
             {/* Search Bar - Desktop */}
-            <div className="hidden lg:flex items-center bg-gray-100 rounded-full px-4 py-2 w-48 xl:w-60 focus-within:w-64 transition-all">
-              <FaSearch className="text-gray-400" />
+            <form
+              onSubmit={runProductSearch}
+              className="hidden lg:flex items-center bg-gray-100 rounded-full px-2 py-2 w-48 xl:w-64 focus-within:ring-2 focus-within:ring-green-400/50 transition-all"
+            >
+              <button
+                type="submit"
+                className="pl-2 text-gray-400 hover:text-green-600 transition-colors"
+                aria-label={t("pages.products.search")}
+              >
+                <FaSearch />
+              </button>
               <input
-                type="text"
-                placeholder="Search..."
+                type="search"
+                placeholder={t("pages.products.searchPlaceholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-transparent border-none outline-none ml-3 text-sm w-full"
+                className="bg-transparent border-none outline-none ml-2 text-sm flex-1 min-w-0"
+                aria-label={t("pages.products.searchPlaceholder")}
               />
-            </div>
+            </form>
 
             {/* Cart */}
-            <button className="relative p-2 hover:bg-gray-100 rounded-full transition">
+            <Link
+              to="/cart"
+              className="relative p-2 hover:bg-gray-100 rounded-full transition"
+              aria-label={t("navbar.myCart")}
+            >
               <FaShoppingCart className="text-lg md:text-xl text-gray-700" />
               <span className="absolute -top-1 -right-1 bg-green-600 text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full">
-                0
+                {itemCount > 99 ? "99+" : itemCount}
               </span>
-            </button>
+            </Link>
 
             {/* Auth Links - Desktop */}
             <div className="hidden md:flex items-center gap-1 border-l pl-3 ml-1">
               {user ? (
                 <div className="flex items-center gap-3">
+                  {user.isAdmin && (
+                    <Link
+                      to="/admin"
+                      className="flex items-center gap-1.5 text-xs font-bold bg-green-700 text-white px-3 py-1.5 rounded-full hover:bg-green-800 transition shadow-sm"
+                      title={t("navbar.adminPanel")}
+                    >
+                      🛡️ {t("navbar.adminBadge")}
+                    </Link>
+                  )}
                   <Link
                     to="/profile"
                     className="flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-green-600 transition"
@@ -130,7 +162,7 @@ const Navbar = () => {
                   <button
                     onClick={() => { logout(); navigate('/login'); }}
                     className="p-1 text-gray-500 hover:text-red-600 transition"
-                    title="Logout"
+                    title={t("auth.logout")}
                   >
                     <FaSignOutAlt />
                   </button>
@@ -149,7 +181,7 @@ const Navbar = () => {
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="xl:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-200 ml-1"
-              aria-label="Toggle menu"
+              aria-label={t("navbar.toggleMenu")}
             >
               {isMobileMenuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
             </button>
@@ -173,16 +205,26 @@ const Navbar = () => {
       >
         <div className="px-6 py-6 flex flex-col gap-6">
           {/* Mobile Search Bar */}
-          <div className="flex items-center bg-gray-100 rounded-full px-4 py-3">
-            <FaSearch className="text-gray-400" />
+          <form
+            onSubmit={runProductSearch}
+            className="flex items-center gap-2 bg-gray-100 rounded-full px-4 py-3"
+          >
+            <FaSearch className="text-gray-400 shrink-0" />
             <input
-              type="text"
-              placeholder="Search products..."
+              type="search"
+              placeholder={t("pages.products.searchPlaceholder")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-transparent border-none outline-none ml-3 text-sm w-full"
+              className="bg-transparent border-none outline-none flex-1 text-sm min-w-0"
+              aria-label={t("pages.products.searchPlaceholder")}
             />
-          </div>
+            <button
+              type="submit"
+              className="text-xs font-bold text-green-700 px-3 py-1 rounded-full bg-white border border-green-200 hover:bg-green-50"
+            >
+              {t("navbar.searchGo")}
+            </button>
+          </form>
 
           {/* Navigation Links */}
           <nav className="flex flex-col gap-2">
@@ -206,23 +248,38 @@ const Navbar = () => {
             {/* Cart Link in Mobile Menu */}
             <div className="flex items-center justify-between mb-4 pb-4 border-b">
               <span className="text-sm font-semibold text-gray-700">
-                My Cart
+                {t("navbar.myCart")}
               </span>
-              <button className="relative inline-flex items-center p-2 hover:bg-gray-100 rounded-full transition">
+              <Link
+                to="/cart"
+                className="relative inline-flex items-center p-2 hover:bg-gray-100 rounded-full transition"
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label={t("navbar.myCart")}
+              >
                 <FaShoppingCart className="text-lg text-gray-700" />
                 <span className="absolute -top-1 -right-1 bg-green-600 text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full">
-                  0
+                  {itemCount > 99 ? "99+" : itemCount}
                 </span>
-              </button>
+              </Link>
             </div>
 
             {/* Mobile Auth Links */}
             <div className="mt-4">
               <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                Account
+                {t("navbar.accountSection")}
               </div>
               {user ? (
                 <div className="flex flex-col gap-2">
+                    {user.isAdmin && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center gap-3 py-3 px-4 rounded-lg bg-green-700 text-white font-bold"
+                      >
+                        <span className="text-lg">🛡️</span>
+                        {t("navbar.adminPanel")}
+                      </Link>
+                    )}
                     <Link
                       to="/profile"
                       onClick={() => setIsMobileMenuOpen(false)}
@@ -253,14 +310,14 @@ const Navbar = () => {
             {/* Support Section */}
             <div className="mt-6">
               <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                Need help?
+                {t("navbar.needHelp")}
               </div>
               <Link
                 to="/contact"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="inline-flex items-center text-green-600 font-semibold hover:text-green-700 transition"
               >
-                Contact Support →
+                {t("navbar.contactSupport")}
               </Link>
             </div>
           </div>
