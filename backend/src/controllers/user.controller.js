@@ -1,5 +1,6 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
+const { normalizeEmail, isStrongPassword } = require("../utils/validation");
 
 // GET user profile
 exports.getProfile = async (req, res) => {
@@ -20,8 +21,15 @@ exports.updateProfile = async (req, res) => {
         const { name, email, phone } = req.body;
         
         // Check if email is already taken by another user
-        if (email) {
-            const existingUser = await User.findOne({ email, _id: { $ne: req.user.id } });
+        if (email !== undefined) {
+            if (typeof email !== "string") {
+                return res.status(400).json({ message: "Invalid email format" });
+            }
+            const normalizedEmail = normalizeEmail(email);
+            if (!normalizedEmail) {
+                return res.status(400).json({ message: "Email is required" });
+            }
+            const existingUser = await User.findOne({ email: normalizedEmail, _id: { $ne: req.user.id } });
             if (existingUser) {
                 return res.status(400).json({ message: "Email already in use" });
             }
@@ -31,7 +39,7 @@ exports.updateProfile = async (req, res) => {
             req.user.id,
             {
                 ...(name && { name }),
-                ...(email && { email }),
+                ...(email && { email: normalizeEmail(email) }),
                 ...(phone && { phone })
             },
             { new: true, runValidators: true }
@@ -56,8 +64,10 @@ exports.changePassword = async (req, res) => {
             return res.status(400).json({ message: "New passwords do not match" });
         }
 
-        if (newPassword.length < 8) {
-            return res.status(400).json({ message: "Password must be at least 8 characters" });
+        if (!isStrongPassword(newPassword)) {
+            return res.status(400).json({
+                message: "Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.",
+            });
         }
 
         const user = await User.findById(req.user.id);

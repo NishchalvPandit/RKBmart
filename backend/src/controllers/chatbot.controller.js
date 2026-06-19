@@ -1,5 +1,8 @@
 const Product = require("../models/product.model");
 const Order = require("../models/order.model");
+const { escapeRegex } = require("../utils/escapeRegex");
+
+const MAX_CHAT_MESSAGE_LENGTH = 1000;
 
 /* ═══════════════════════════════════════════════════════════════════
    FAQ / Customer Support Knowledge Base
@@ -213,7 +216,7 @@ async function searchProducts(parsedQuery) {
     const filter = {};
 
     if (parsedQuery.category) {
-        filter.category = new RegExp(parsedQuery.category, "i");
+        filter.category = new RegExp(escapeRegex(parsedQuery.category), "i");
     }
 
     if (parsedQuery.minPrice || parsedQuery.maxPrice) {
@@ -223,10 +226,11 @@ async function searchProducts(parsedQuery) {
     }
 
     if (parsedQuery.keyword) {
+        const safeKeyword = escapeRegex(parsedQuery.keyword);
         filter.$or = [
-            { name: new RegExp(parsedQuery.keyword, "i") },
-            { description: new RegExp(parsedQuery.keyword, "i") },
-            { category: new RegExp(parsedQuery.keyword, "i") }
+            { name: new RegExp(safeKeyword, "i") },
+            { description: new RegExp(safeKeyword, "i") },
+            { category: new RegExp(safeKeyword, "i") }
         ];
     }
 
@@ -250,6 +254,13 @@ async function searchProducts(parsedQuery) {
    Track Order
    ═══════════════════════════════════════════════════════════════════ */
 async function trackOrder(message, userId) {
+    if (!userId) {
+        return {
+            text: "Please log in to track your order. You can find your Order ID under My Orders in your profile.",
+            type: "text"
+        };
+    }
+
     // Extract order ID (MongoDB ObjectId = 24 hex chars)
     const idMatch = message.match(/[a-f0-9]{24}/i);
 
@@ -261,10 +272,7 @@ async function trackOrder(message, userId) {
     }
 
     const orderId = idMatch[0];
-    const query = { _id: orderId };
-    if (userId) query.userId = userId;
-
-    const order = await Order.findOne(query).lean();
+    const order = await Order.findOne({ _id: orderId, userId }).lean();
 
     if (!order) {
         return {
@@ -316,14 +324,19 @@ exports.handleChat = async (req, res) => {
             return res.status(400).json({ error: "Message is required" });
         }
 
-        const userId = req.user?._id || null;
-        const intent = detectIntent(message);
+        const trimmedMessage = message.trim();
+        if (trimmedMessage.length > MAX_CHAT_MESSAGE_LENGTH) {
+            return res.status(400).json({ error: "Message is too long" });
+        }
+
+        const userId = req.user?.id || null;
+        const intent = detectIntent(trimmedMessage);
 
         let response;
 
         switch (intent) {
             case "product_search": {
-                const parsedQuery = parseProductQuery(message);
+                const parsedQuery = parseProductQuery(trimmedMessage);
                 const products = await searchProducts(parsedQuery);
 
                 // Build a human-readable summary of what was searched
@@ -358,12 +371,12 @@ exports.handleChat = async (req, res) => {
             }
 
             case "order_tracking": {
-                response = await trackOrder(message, userId);
+                response = await trackOrder(trimmedMessage, userId);
                 break;
             }
 
             case "faq": {
-                const faqAnswer = getFAQResponse(message);
+                const faqAnswer = getFAQResponse(trimmedMessage);
                 response = { type: "text", text: faqAnswer };
                 break;
             }

@@ -1,15 +1,26 @@
-const admin = (req, res, next) => {
-    // req.user comes from auth middleware
+const User = require("../models/user.model");
+
+const admin = async (req, res, next) => {
     if (!req.user) {
         return res.status(401).json({ message: "Unauthorized" });
     }
 
-    // Allow both admin and super_admin roles
-    if (req.user.role !== "admin" && req.user.role !== "super_admin") {
-        return res.status(403).json({ message: "Admin access required" });
-    }
+    try {
+        const user = await User.findById(req.user.id).select("role isAdmin");
+        if (!user) {
+            return res.status(401).json({ message: "User not found" });
+        }
 
-    next();
+        if (user.role !== "admin" && user.role !== "super_admin") {
+            return res.status(403).json({ message: "Admin access required" });
+        }
+
+        req.user.role = user.role;
+        req.user.isAdmin = user.isAdmin;
+        next();
+    } catch {
+        return res.status(500).json({ message: "Authorization check failed" });
+    }
 };
 
 module.exports = admin;

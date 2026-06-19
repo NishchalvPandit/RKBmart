@@ -1,9 +1,12 @@
 import { useMemo, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { API_BASE } from "../config/api";
+import Seo from "../components/Seo";
 
 const ResetPassword = () => {
+    const { t } = useTranslation();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const token = useMemo(() => searchParams.get("token") || "", [searchParams]);
@@ -27,11 +30,11 @@ const ResetPassword = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!token) {
-            setMessage("Reset token is missing.");
+            setMessage(t("resetPassword.tokenMissing"));
             return;
         }
         if (!isStrongPassword) {
-            setMessage("Password is too weak. Please follow the requirements below.");
+            setMessage(t("auth.passwordWeak"));
             return;
         }
         if (submitting) return;
@@ -44,66 +47,74 @@ const ResetPassword = () => {
                 { password },
                 { withCredentials: true }
             );
-            setMessage(res.data?.message || "Password reset successful. Please log in.");
+            setMessage(res.data?.message || t("resetPassword.success"));
             setTimeout(() => navigate("/login"), 1200);
         } catch (err) {
-            setMessage(err.response?.data?.message || "Could not reset password.");
+            setMessage(err.response?.data?.message || t("resetPassword.failed"));
         } finally {
             setSubmitting(false);
         }
     };
 
     return (
-        <div className="min-h-[80vh] flex items-center justify-center bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-6 bg-white p-10 rounded-2xl shadow-xl border border-gray-100">
-                <h2 className="text-center text-3xl font-extrabold text-gray-900">Reset Password</h2>
-                <p className="text-center text-sm text-gray-600">Set your new password using the reset link.</p>
+        <>
+            <Seo
+                title={t("seo.resetTitle")}
+                description={t("seo.resetDesc")}
+                path="/reset-password"
+                noIndex
+            />
+            <div className="min-h-[80vh] flex items-center justify-center bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-md w-full space-y-6 bg-white p-10 rounded-2xl shadow-xl border border-gray-100">
+                    <h2 className="text-center text-3xl font-extrabold text-gray-900">{t("resetPassword.title")}</h2>
+                    <p className="text-center text-sm text-gray-600">{t("resetPassword.subtitle")}</p>
 
-                <form className="space-y-4" onSubmit={handleSubmit}>
-                    <input
-                        type="password"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="appearance-none rounded-xl block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                        placeholder="New password"
-                    />
-                    <div className="px-1">
-                        <p className="text-xs text-gray-600">Password must include:</p>
-                        <ul className="text-xs text-gray-600 space-y-1 mt-1 list-disc pl-5">
-                            <li className={passwordChecks.minLength ? "text-green-700" : "text-red-600"}>
-                                At least 8 characters
-                            </li>
-                            <li className={passwordChecks.hasUpperAndLower ? "text-green-700" : "text-red-600"}>
-                                Uppercase and lowercase letters
-                            </li>
-                            <li className={passwordChecks.hasNumber ? "text-green-700" : "text-red-600"}>
-                                At least one number
-                            </li>
-                            <li className={passwordChecks.hasSpecial ? "text-green-700" : "text-red-600"}>
-                                At least one special character
-                            </li>
-                        </ul>
+                    <form className="space-y-4" onSubmit={handleSubmit}>
+                        <input
+                            type="password"
+                            required
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="appearance-none rounded-xl block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                            placeholder={t("resetPassword.newPassword")}
+                        />
+                        <div className="px-1">
+                            <p className="text-xs text-gray-600">{t("resetPassword.requirementsTitle")}</p>
+                            <ul className="text-xs text-gray-600 space-y-1 mt-1 list-disc pl-5">
+                                <li className={passwordChecks.minLength ? "text-green-700" : "text-red-600"}>
+                                    {t("auth.pwReqMinLen")}
+                                </li>
+                                <li className={passwordChecks.hasUpperAndLower ? "text-green-700" : "text-red-600"}>
+                                    {t("auth.pwReqCase")}
+                                </li>
+                                <li className={passwordChecks.hasNumber ? "text-green-700" : "text-red-600"}>
+                                    {t("auth.pwReqNumber")}
+                                </li>
+                                <li className={passwordChecks.hasSpecial ? "text-green-700" : "text-red-600"}>
+                                    {t("auth.pwReqSpecial")}
+                                </li>
+                            </ul>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={submitting}
+                            className="w-full py-3 px-4 text-sm font-semibold rounded-xl text-white bg-green-600 hover:bg-green-700 disabled:bg-green-400"
+                        >
+                            {submitting ? t("resetPassword.updating") : t("resetPassword.updateButton")}
+                        </button>
+                    </form>
+
+                    {message && <p className="text-sm text-center text-gray-700">{message}</p>}
+
+                    <div className="text-center">
+                        <Link to="/login" className="text-sm font-semibold text-green-700 hover:text-green-800 underline">
+                            {t("resetPassword.backLogin")}
+                        </Link>
                     </div>
-
-                    <button
-                        type="submit"
-                        disabled={submitting}
-                        className="w-full py-3 px-4 text-sm font-semibold rounded-xl text-white bg-green-600 hover:bg-green-700 disabled:bg-green-400"
-                    >
-                        {submitting ? "Updating..." : "Update password"}
-                    </button>
-                </form>
-
-                {message && <p className="text-sm text-center text-gray-700">{message}</p>}
-
-                <div className="text-center">
-                    <Link to="/login" className="text-sm font-semibold text-green-700 hover:text-green-800 underline">
-                        Back to login
-                    </Link>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

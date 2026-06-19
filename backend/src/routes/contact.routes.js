@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { contactLimiter } = require("../middleware/rateLimit.middleware");
 
 const auth = require("../middleware/auth.middleware");
 const admin = require("../middleware/admin.middleware");
@@ -13,7 +14,7 @@ const {
 } = require("../controllers/contact.controller");
 
 // Public — submit contact form
-router.post("/", createContactMessage);
+router.post("/", contactLimiter, createContactMessage);
 
 // Admin — below routes protected
 router.get("/", auth, admin, getContactMessages);

@@ -1,4 +1,5 @@
-import React, { useContext, useState, useEffect, useMemo } from "react";
+import React, { useContext, useState, useEffect, useMemo, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { AuthContext } from "../context/AuthContext";
 import { Navigate, Link } from "react-router-dom";
 import axios from "axios";
@@ -7,6 +8,10 @@ import {
   NEPAL_DISTRICTS_BY_PROVINCE,
   NEPAL_CITIES_BY_PROVINCE,
 } from "../data/nepalProvinces";
+import { API_BASE } from "../config/api";
+import Seo from "../components/Seo";
+
+const API = `${API_BASE}/api`;
 
 const ADDRESS_LABEL_DISPLAY = { home: "Home", work: "Work", other: "Other" };
 
@@ -35,6 +40,8 @@ const btnPrimary =
 const btnOutline =
   "rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300";
 
+const cfg = { withCredentials: true };
+
 function orderStatusBadgeClass(status) {
   const map = {
     delivered: "bg-green-100 text-green-800",
@@ -48,6 +55,7 @@ function orderStatusBadgeClass(status) {
 }
 
 const UserProfile = () => {
+  const { t } = useTranslation();
   const { user, loading, logout } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("profile");
   const [profileData, setProfileData] = useState(null);
@@ -91,10 +99,7 @@ const UserProfile = () => {
     [addressForm.province],
   );
 
-  const API = "http://localhost:8080/api";
-  const cfg = { withCredentials: true };
-
-  const showNotification = (message, type = "success") => {
+  const showNotification = useCallback((message, type = "success") => {
     if (type === "success") {
       setSuccess(message);
       setTimeout(() => setSuccess(""), 3000);
@@ -102,9 +107,9 @@ const UserProfile = () => {
       setError(message);
       setTimeout(() => setError(""), 3000);
     }
-  };
+  }, []);
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     setProfileLoading(true);
     try {
       const res = await axios.get(`${API}/users/profile`, cfg);
@@ -122,9 +127,9 @@ const UserProfile = () => {
     } finally {
       setProfileLoading(false);
     }
-  };
+  }, [showNotification]);
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setProfileLoading(true);
     try {
       const res = await axios.get(`${API}/orders/my-orders`, cfg);
@@ -137,9 +142,9 @@ const UserProfile = () => {
     } finally {
       setProfileLoading(false);
     }
-  };
+  }, [showNotification]);
 
-  const fetchAddresses = async () => {
+  const fetchAddresses = useCallback(async () => {
     setProfileLoading(true);
     try {
       const res = await axios.get(`${API}/users/addresses`, cfg);
@@ -152,7 +157,7 @@ const UserProfile = () => {
     } finally {
       setProfileLoading(false);
     }
-  };
+  }, [showNotification]);
 
   useEffect(() => {
     if (!loading && user) {
@@ -164,7 +169,7 @@ const UserProfile = () => {
         fetchAddresses();
       }
     }
-  }, [activeTab, loading, user]);
+  }, [activeTab, loading, user, fetchProfile, fetchOrders, fetchAddresses]);
 
   useEffect(() => {
     if (!showAddressModal && !showPasswordModal) return;
@@ -392,7 +397,7 @@ const UserProfile = () => {
   const navItems = [
     {
       id: "profile",
-      label: "Profile Info",
+      label: t("profile.tabProfileInfo"),
       icon: (
         <svg className="shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
@@ -401,7 +406,7 @@ const UserProfile = () => {
     },
     {
       id: "orders",
-      label: "My Orders",
+      label: t("profile.tabOrders"),
       icon: (
         <svg className="shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/>
@@ -410,7 +415,7 @@ const UserProfile = () => {
     },
     {
       id: "addresses",
-      label: "Address Book",
+      label: t("profile.tabAddressBook"),
       icon: (
         <svg className="shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
@@ -419,7 +424,7 @@ const UserProfile = () => {
     },
     {
       id: "settings",
-      label: "Settings",
+      label: t("profile.tabSettings"),
       icon: (
         <svg className="shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -442,6 +447,13 @@ const UserProfile = () => {
   if (!user) return <Navigate to="/login" />;
 
   return (
+    <>
+    <Seo
+      title={t("seo.profileTitle")}
+      description={t("seo.profileDesc")}
+      path="/profile"
+      noIndex
+    />
     <div className="min-h-screen bg-slate-50 px-4 py-8 font-sans md:py-10">
       <div className="mx-auto max-w-5xl">
         {success && (
@@ -463,10 +475,10 @@ const UserProfile = () => {
 
         <header className="mb-8">
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
-            My Account
+            {t("profile.title")}
           </h1>
           <p className="mt-1 text-gray-600">
-            Manage your profile, orders and addresses
+            {t("profile.subtitle")}
           </p>
         </header>
 
@@ -478,7 +490,7 @@ const UserProfile = () => {
               </div>
               <h2 className="text-lg font-bold text-gray-900">{user.name}</h2>
               <p className="mt-1 text-sm text-gray-500">
-                Member since {new Date().getFullYear()}
+                {t("profile.memberSince", { year: new Date().getFullYear() })}
               </p>
             </div>
 
@@ -1019,6 +1031,7 @@ const UserProfile = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

@@ -6,21 +6,12 @@ const { sendVerificationEmail } = require("../utils/sendVerificationEmail");
 const { createVerificationToken } = require("../utils/verificationToken");
 const { sendPasswordResetEmail } = require("../utils/sendPasswordResetEmail");
 const { getFrontendUrl } = require("../utils/frontendUrl");
-
-const normalizeEmail = (email) => String(email || "").trim().toLowerCase();
-
-const normalizePassword = (password) => String(password ?? "");
-
-const isStrongPassword = (password) => {
-    const pwd = normalizePassword(password);
-    if (!pwd) return false;
-    if (pwd.length < 8) return false;
-    if (!/[a-z]/.test(pwd)) return false;
-    if (!/[A-Z]/.test(pwd)) return false;
-    if (!/[0-9]/.test(pwd)) return false;
-    if (!/[^A-Za-z0-9]/.test(pwd)) return false;
-    return true;
-};
+const { authCookieOptions, clearAuthCookieOptions } = require("../utils/cookieOptions");
+const {
+    normalizeEmail,
+    normalizePassword,
+    isStrongPassword,
+} = require("../utils/validation");
 
 // REGISTER
 exports.register = async (req, res) => {
@@ -70,7 +61,6 @@ exports.register = async (req, res) => {
 
                 return res.status(500).json({
                     message: "Account exists but verification email could not be resent. Please try again.",
-                    error: mailError.message
                 });
             }
 
@@ -102,7 +92,6 @@ exports.register = async (req, res) => {
             await User.deleteOne({ _id: user._id });
             return res.status(500).json({
                 message: "Verification email could not be sent. Please try registering again.",
-                error: mailError.message
             });
         }
 
@@ -135,10 +124,7 @@ exports.getMe = async (req, res) => {
 
 // LOGOUT
 exports.logout = (req, res) => {
-    res.cookie("token", "", {
-        httpOnly: true,
-        expires: new Date(0)
-    });
+    res.cookie("token", "", clearAuthCookieOptions);
     res.status(200).json({ message: "Logged out successfully" });
 };
 
@@ -171,6 +157,7 @@ exports.login = async (req, res) => {
         const token = jwt.sign(
             {
                 id: user._id,
+                name: user.name,
                 isAdmin: user.isAdmin,
                 role: user.role || "user"
             },
@@ -178,13 +165,10 @@ exports.login = async (req, res) => {
             { expiresIn: process.env.JWT_ACCESS_EXPIRY || "7d" }
         );
 
-        res.cookie("token", token, {
-            httpOnly: true
-        });
+        res.cookie("token", token, authCookieOptions);
 
         res.json({
             message: "Login successful",
-            token,
             user: {
                 id: user._id,
                 name: user.name,
@@ -283,7 +267,6 @@ exports.resendVerificationEmail = async (req, res) => {
 
             return res.status(500).json({
                 message: "Could not send verification email. Please try again.",
-                error: mailError.message
             });
         }
 
@@ -328,7 +311,6 @@ exports.forgotPassword = async (req, res) => {
 
             return res.status(500).json({
                 message: "Could not send password reset email. Please try again.",
-                error: mailError.message
             });
         }
 

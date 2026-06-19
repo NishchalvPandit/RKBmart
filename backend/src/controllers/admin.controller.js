@@ -8,7 +8,9 @@ exports.getDashboardStats = async (req, res) => {
         const totalUsers = await User.countDocuments();
         const totalProducts = await Product.countDocuments();
         const verifiedUsers = await User.countDocuments({ isVerified: true });
-        const adminUsers = await User.countDocuments({ isAdmin: true });
+        const adminUsers = await User.countDocuments({
+            role: { $in: ["admin", "super_admin"] },
+        });
         const totalOrders = await Order.countDocuments();
 
         res.json({ totalUsers, totalProducts, verifiedUsers, adminUsers, totalOrders });
@@ -37,8 +39,14 @@ exports.deleteUser = async (req, res) => {
             return res.status(400).json({ message: "You cannot delete your own account from admin panel." });
         }
 
-        const user = await User.findByIdAndDelete(req.params.id);
+        const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ message: "User not found" });
+
+        if (user.role === "super_admin") {
+            return res.status(403).json({ message: "Super admin accounts cannot be deleted." });
+        }
+
+        await user.deleteOne();
 
         res.json({ message: "User deleted successfully" });
     } catch (err) {
@@ -57,12 +65,18 @@ exports.toggleAdminStatus = async (req, res) => {
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ message: "User not found" });
 
+        if (user.role === "super_admin") {
+            return res.status(403).json({ message: "Super admin status cannot be modified." });
+        }
+
         user.isAdmin = !user.isAdmin;
+        user.role = user.isAdmin ? "admin" : "user";
         await user.save();
 
         res.json({
             message: `Admin access ${user.isAdmin ? "granted to" : "revoked from"} ${user.name}`,
-            isAdmin: user.isAdmin
+            isAdmin: user.isAdmin,
+            role: user.role,
         });
     } catch (err) {
         res.status(500).json({ message: err.message });

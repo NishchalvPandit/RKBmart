@@ -21,12 +21,13 @@ async function run() {
             process.exit(1);
         }
 
-        if (user.isAdmin) {
+        if (user.isAdmin || user.role === "admin" || user.role === "super_admin") {
             console.log(`ℹ️   ${user.name} (${user.email}) is already an admin.`);
             process.exit(0);
         }
 
         user.isAdmin = true;
+        user.role = "admin";
         await user.save();
 
         console.log(`🎉  Success! "${user.name}" (${user.email}) is now an admin.`);

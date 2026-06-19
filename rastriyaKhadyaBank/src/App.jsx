@@ -3,7 +3,6 @@ import {
   BrowserRouter,
   Routes,
   Route,
-  Link,
   useLocation,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -12,7 +11,9 @@ import Home from "./pages/Home";
 import Footer from "./components/Footer";
 import Products from "./pages/Products";
 import ProductDetailSkeleton from "./components/ProductDetailSkeleton";
+import RouteSeo from "./components/RouteSeo";
 const ProductDetails = lazy(() => import("./pages/ProductDetails"));
+const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 import Cart from "./pages/Cart";
 import Gallery from "./pages/Gallery";
 import Contact from "./pages/Contact";
@@ -23,27 +24,17 @@ import VerifyEmail from "./pages/VerifyEmail";
 import ResetPassword from "./pages/ResetPassword";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
-import AdminPanel from "./pages/AdminPanel";
+import NotFound from "./pages/NotFound";
 import Chatbot from "./components/Chatbot";
 
 const AppLayout = () => {
   const { t } = useTranslation();
-  const location = useLocation();
-  const isAdminPage = location.pathname === "/admin";
-
-  if (isAdminPage) {
-    return (
-      <Routes>
-        <Route path="/admin" element={<AdminPanel />} />
-      </Routes>
-    );
-  }
 
   return (
     <>
+      <RouteSeo />
       <Navbar />
-      <main className="pt-16 md:pt-[100px]">
-        {/* Slim White Branding Bar (Static) */}
+      <main id="main-content" className="pt-16 md:pt-[100px]">
         <div className="bg-white border-b border-gray-100 py-1.5 px-4 shadow-sm relative z-40">
           <div className="max-w-7xl mx-auto flex flex-wrap justify-center items-center gap-x-4 gap-y-1 text-center">
             <span className="text-xs md:text-sm font-semibold text-gray-500 uppercase tracking-widest">
@@ -83,6 +74,7 @@ const AppLayout = () => {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-success" element={<OrderSuccess />} />
           <Route path="/profile" element={<UserProfile />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       <Footer />
@@ -90,14 +82,32 @@ const AppLayout = () => {
   );
 };
 
+const AppRoutes = () => {
+  const location = useLocation();
+  const isAdminPage = location.pathname === "/admin";
+
+  return (
+    <>
+      <Routes>
+        <Route
+          path="/admin"
+          element={
+            <Suspense fallback={<ProductDetailSkeleton />}>
+              <AdminPanel />
+            </Suspense>
+          }
+        />
+        <Route path="/*" element={<AppLayout />} />
+      </Routes>
+      {!isAdminPage && <Chatbot />}
+    </>
+  );
+};
+
 const App = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/admin" element={<AdminPanel />} />
-        <Route path="/*" element={<AppLayout />} />
-      </Routes>
-      <Chatbot />
+      <AppRoutes />
     </BrowserRouter>
   );
 };

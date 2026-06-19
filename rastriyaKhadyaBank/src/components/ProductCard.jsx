@@ -6,15 +6,6 @@ import { useCart } from "../context/CartContext";
 const placeholderImage =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect width='100%25' height='100%25' fill='%23f1f5f9'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='16' fill='%23cbd5e1'%3ENo Image%3C/text%3E%3C/svg%3E";
 
-const CATEGORY_COLORS = {
-  Grains:     { bg: "#fef9ee", text: "#92400e", dot: "#f59e0b" },
-  Pulses:     { bg: "#eff6ff", text: "#1e40af", dot: "#3b82f6" },
-  Fruits:     { bg: "#fdf2f8", text: "#9d174d", dot: "#ec4899" },
-  Oils:       { bg: "#f0fdf4", text: "#14532d", dot: "#22c55e" },
-  Organic:    { bg: "#f0fdf4", text: "#14532d", dot: "#22c55e" },
-  Vegetables: { bg: "#ecfdf5", text: "#065f46", dot: "#10b981" },
-};
-
 const ProductCard = ({ product }) => {
   const { t } = useTranslation();
   const { addToCart } = useCart();
@@ -23,7 +14,6 @@ const ProductCard = ({ product }) => {
 
   const productId = product._id ?? product.id;
   const to = `/products/${productId}`;
-  const catStyle = CATEGORY_COLORS[product.category] || { bg: "#f8fafc", text: "#475569", dot: "#94a3b8" };
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -85,7 +75,7 @@ const ProductCard = ({ product }) => {
               borderRadius: 999, padding: "0.22rem 0.65rem",
               fontSize: "0.7rem", fontWeight: 700,
             }}>
-              Out of Stock
+              {t("pages.products.outOfStock")}
             </span>
           )}
         </div>
@@ -120,7 +110,7 @@ const ProductCard = ({ product }) => {
           </span>
           {product.stock > 0 && (
             <span style={{ fontSize: "0.72rem", color: "#64748b" }}>
-              {product.stock} left
+              {t("pages.products.stockLeft", { count: product.stock })}
             </span>
           )}
         </div>
@@ -154,9 +144,9 @@ const ProductCard = ({ product }) => {
           }}
         >
           {product.stock === 0
-            ? "Out of Stock"
+            ? t("pages.products.outOfStock")
             : added
-              ? "✓ Added to Cart"
+              ? t("pages.products.addedToCart")
               : t("pages.products.addToCart") || "Add to Cart"}
         </button>
       </div>

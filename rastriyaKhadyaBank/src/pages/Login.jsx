@@ -29,7 +29,7 @@ const Login = () => {
     const verifiedFromEmail = searchParams.get("verified") === "true";
     const verifyError = searchParams.get("verifyError");
     const successMessage = verifiedFromEmail
-        ? "Email verified successfully! You can now log in."
+        ? t("auth.emailVerifiedSuccess")
         : location.state?.message;
 
     const clearErrors = () => {
@@ -88,10 +88,10 @@ const Login = () => {
                 { withCredentials: true }
             );
             setForgotIsError(false);
-            setForgotMessage(res.data?.message || 'If that email exists, a reset link has been sent.');
+            setForgotMessage(res.data?.message || t("auth.resetLinkSent"));
         } catch (err) {
             setForgotIsError(true);
-            setForgotMessage(err.response?.data?.message || 'Could not send reset link.');
+            setForgotMessage(err.response?.data?.message || t("auth.resetLinkFailed"));
         } finally {
             setForgotSubmitting(false);
         }
@@ -182,13 +182,13 @@ const Login = () => {
                             onClick={() => setShowForgotPassword(!showForgotPassword)}
                             className="text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors"
                         >
-                            {showForgotPassword ? 'Close Forgot password' : 'Forgot password?'}
+                            {showForgotPassword ? t("auth.closeForgotPassword") : t("auth.forgotPassword")}
                         </button>
                     </div>
 
                     {showForgotPassword && (
                         <div className="mt-6 p-6 rounded-2xl bg-slate-50 border border-slate-100 animate-in fade-in slide-in-from-top-4 duration-300">
-                            <p className="text-sm text-slate-600 mb-4 font-medium">Enter your email to receive a reset link.</p>
+                            <p className="text-sm text-slate-600 mb-4 font-medium">{t("auth.forgotPasswordHint")}</p>
                             <form onSubmit={handleForgotPassword} className="space-y-4">
                                 <input
                                     type="email"
@@ -203,7 +203,7 @@ const Login = () => {
                                     disabled={forgotSubmitting}
                                     className="w-full h-12 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 transition-colors"
                                 >
-                                    {forgotSubmitting ? 'Sending...' : 'Send reset link'}
+                                    {forgotSubmitting ? t("auth.sendingResetLink") : t("auth.sendResetLink")}
                                 </button>
                             </form>
                             {forgotMessage && (

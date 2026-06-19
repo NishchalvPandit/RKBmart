@@ -5,6 +5,7 @@ import { useCart } from "../context/CartContext";
 import { API_BASE } from "../config/api";
 import ProductDetailSkeleton from "../components/ProductDetailSkeleton";
 import ProductReviews from "../components/ProductReviews";
+import Seo from "../components/Seo";
 
 const placeholderImage =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'%3E%3Crect width='100%25' height='100%25' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='24' fill='%239ca3af'%3E%3C/text%3E%3C/svg%3E";
@@ -50,36 +51,6 @@ export default function ProductDetails() {
     };
   }, [id, t]);
 
-  useEffect(() => {
-    if (!product) return;
-
-    const prevTitle = document.title;
-    const descText = (product.description || `${product.name} — RKB Mart`)
-      .replace(/\s+/g, " ")
-      .trim()
-      .slice(0, 160);
-    document.title = `${product.name} | RKB Mart`;
-
-    let meta = document.querySelector('meta[name="description"]');
-    const created = !meta;
-    if (!meta) {
-      meta = document.createElement("meta");
-      meta.setAttribute("name", "description");
-      document.head.appendChild(meta);
-    }
-    const prevDesc = meta.getAttribute("content") || "";
-    meta.setAttribute("content", descText);
-
-    return () => {
-      document.title = prevTitle;
-      if (created) {
-        meta?.remove();
-      } else {
-        meta?.setAttribute("content", prevDesc);
-      }
-    };
-  }, [product]);
-
   if (loading) {
     return <ProductDetailSkeleton />;
   }
@@ -100,8 +71,19 @@ export default function ProductDetails() {
 
   const imageSrc = product.image || placeholderImage;
   const isPlaceholderImage = !product.image;
+  const seoDescription = (product.description || `${product.name} — RKB Mart`)
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 160);
 
   return (
+    <>
+      <Seo
+        title={product.name}
+        description={seoDescription}
+        path={`/products/${product._id || id}`}
+        image={product.image || undefined}
+      />
     <div className="max-w-7xl mx-auto px-4 py-8 lg:py-12">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
         <div className="lg:col-span-4 space-y-2 order-1">
@@ -211,5 +193,6 @@ export default function ProductDetails() {
         <ProductReviews productId={id} />
       </div>
     </div>
+    </>
   );
 }

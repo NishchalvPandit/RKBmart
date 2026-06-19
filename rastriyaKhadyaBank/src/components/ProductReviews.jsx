@@ -1,4 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { AuthContext } from "../context/AuthContext";
 import { API_BASE } from "../config/api";
 
@@ -33,6 +35,7 @@ function Stars({ value, size = 18, interactive = false, onChange }) {
 
 /* ── Average summary bar ─────────────────────────────────────────── */
 function RatingSummary({ reviews }) {
+    const { t } = useTranslation();
     if (!reviews.length) return null;
 
     const avg = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
@@ -55,7 +58,7 @@ function RatingSummary({ reviews }) {
                 </div>
                 <Stars value={Math.round(avg)} size={20} />
                 <div style={{ fontSize: "0.78rem", color: "#888", marginTop: 4 }}>
-                    {reviews.length} {reviews.length === 1 ? "review" : "reviews"}
+                    {reviews.length} {reviews.length === 1 ? t("reviews.review") : t("reviews.reviews")}
                 </div>
             </div>
 
@@ -86,6 +89,7 @@ function RatingSummary({ reviews }) {
 
 /* ── Review form ──────────────────────────────────────────────────── */
 function ReviewForm({ productId, onSubmitted }) {
+    const { t } = useTranslation();
     const { user } = useContext(AuthContext);
     const [rating, setRating] = useState(0);
     const [title, setTitle]   = useState("");
@@ -95,7 +99,7 @@ function ReviewForm({ productId, onSubmitted }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!rating) { setErr("Please select a star rating."); return; }
+        if (!rating) { setErr(t("reviews.selectRating")); return; }
         setSaving(true);
         setErr("");
         try {
@@ -123,7 +127,10 @@ function ReviewForm({ productId, onSubmitted }) {
                 borderRadius: 12, padding: "1rem 1.25rem",
                 color: "#166534", fontSize: "0.9rem", textAlign: "center",
             }}>
-                Please <a href="/login" style={{ fontWeight: 700, color: "#15803d" }}>log in</a> to leave a review.
+                {t("reviews.loginPrompt")}{" "}
+                <Link to="/login" style={{ fontWeight: 700, color: "#15803d" }}>
+                    {t("reviews.loginLink")}
+                </Link>
             </div>
         );
     }
@@ -135,25 +142,22 @@ function ReviewForm({ productId, onSubmitted }) {
             boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
         }}>
             <h3 style={{ fontWeight: 700, fontSize: "1.05rem", marginBottom: "1rem", color: "#111" }}>
-                Write a Review
+                {t("reviews.writeReview")}
             </h3>
 
-            {/* Star picker */}
             <div style={{ marginBottom: "1rem" }}>
-                <label style={{ fontSize: "0.82rem", color: "#555", display: "block", marginBottom: 6, fontWeight: 600 }}>
-                    Your Rating *
-                </label>
+                <label style={labelStyle}>{t("reviews.yourRating")}</label>
                 <Stars value={rating} size={28} interactive onChange={setRating} />
             </div>
 
             {/* Title */}
             <div style={{ marginBottom: "0.85rem" }}>
-                <label style={labelStyle}>Review Title</label>
+                <label style={labelStyle}>{t("reviews.reviewTitle")}</label>
                 <input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Sum it up in a few words…"
+                    placeholder={t("reviews.titlePlaceholder")}
                     maxLength={100}
                     style={inputStyle}
                 />
@@ -161,11 +165,11 @@ function ReviewForm({ productId, onSubmitted }) {
 
             {/* Body */}
             <div style={{ marginBottom: "1rem" }}>
-                <label style={labelStyle}>Your Review</label>
+                <label style={labelStyle}>{t("reviews.yourReview")}</label>
                 <textarea
                     value={body}
                     onChange={(e) => setBody(e.target.value)}
-                    placeholder="Tell others what you think about this product…"
+                    placeholder={t("reviews.bodyPlaceholder")}
                     rows={4}
                     maxLength={1000}
                     style={{ ...inputStyle, resize: "vertical", minHeight: 90 }}
@@ -185,7 +189,7 @@ function ReviewForm({ productId, onSubmitted }) {
                     fontSize: "0.9rem", transition: "opacity 0.2s",
                 }}
             >
-                {saving ? "Submitting…" : "Submit Review"}
+                {saving ? t("reviews.submitting") : t("reviews.submit")}
             </button>
         </form>
     );
@@ -193,10 +197,11 @@ function ReviewForm({ productId, onSubmitted }) {
 
 /* ── Single review card ───────────────────────────────────────────── */
 function ReviewCard({ review, onDelete, canDelete }) {
+    const { t } = useTranslation();
     const [deleting, setDeleting] = useState(false);
 
     const handleDelete = async () => {
-        if (!window.confirm("Delete this review?")) return;
+        if (!window.confirm(t("reviews.deleteConfirm"))) return;
         setDeleting(true);
         try {
             await fetch(`${API_BASE}/api/products/${review.product}/reviews/${review._id}`, {
@@ -258,7 +263,7 @@ function ReviewCard({ review, onDelete, canDelete }) {
                         fontWeight: 600, padding: 0, opacity: deleting ? 0.5 : 1,
                     }}
                 >
-                    {deleting ? "Deleting…" : "Delete"}
+                    {deleting ? t("reviews.deleting") : t("reviews.delete")}
                 </button>
             )}
         </div>
@@ -267,19 +272,25 @@ function ReviewCard({ review, onDelete, canDelete }) {
 
 /* ── Main export ─────────────────────────────────────────────────── */
 export default function ProductReviews({ productId }) {
+    const { t } = useTranslation();
     const { user } = useContext(AuthContext);
     const [reviews, setReviews] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loadedFor, setLoadedFor] = useState(null);
+    const loading = loadedFor !== productId;
 
-    // Load reviews
     useEffect(() => {
         let cancelled = false;
-        setLoading(true);
         fetch(`${API_BASE}/api/products/${productId}/reviews`)
             .then((r) => r.json())
-            .then((data) => { if (!cancelled) setReviews(Array.isArray(data) ? data : []); })
-            .catch(() => {})
-            .finally(() => { if (!cancelled) setLoading(false); });
+            .then((data) => {
+                if (!cancelled) {
+                    setReviews(Array.isArray(data) ? data : []);
+                    setLoadedFor(productId);
+                }
+            })
+            .catch(() => {
+                if (!cancelled) setLoadedFor(productId);
+            });
         return () => { cancelled = true; };
     }, [productId]);
 
@@ -301,7 +312,7 @@ export default function ProductReviews({ productId }) {
                 display: "flex", alignItems: "center", gap: 12, marginBottom: "1.5rem",
             }}>
                 <h2 style={{ fontWeight: 800, fontSize: "1.5rem", color: "#111", margin: 0 }}>
-                    Reviews &amp; Ratings
+                    {t("reviews.title")}
                 </h2>
                 {reviews.length > 0 && (
                     <span style={{
@@ -314,10 +325,8 @@ export default function ProductReviews({ productId }) {
                 )}
             </div>
 
-            {/* Summary */}
             {!loading && <RatingSummary reviews={reviews} />}
 
-            {/* Review form */}
             {!userHasReviewed && (
                 <div style={{ marginBottom: "2rem" }}>
                     <ReviewForm productId={productId} onSubmitted={handleSubmitted} />
@@ -333,14 +342,13 @@ export default function ProductReviews({ productId }) {
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="20 6 9 17 4 12"/>
                     </svg>
-                    You have already reviewed this product.
+                    {t("reviews.alreadyReviewed")}
                 </div>
             )}
 
-            {/* List */}
             {loading && (
                 <div style={{ textAlign: "center", color: "#9ca3af", padding: "2rem" }}>
-                    Loading reviews…
+                    {t("reviews.loading")}
                 </div>
             )}
             {!loading && reviews.length === 0 && (
@@ -349,7 +357,7 @@ export default function ProductReviews({ productId }) {
                     background: "#f8fafc", borderRadius: 14,
                     color: "#9ca3af", fontSize: "0.9rem",
                 }}>
-                    No reviews yet. Be the first to share your thoughts!
+                    {t("reviews.empty")}
                 </div>
             )}
             {!loading && reviews.length > 0 && (
