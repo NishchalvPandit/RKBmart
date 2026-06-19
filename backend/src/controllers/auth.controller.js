@@ -5,14 +5,20 @@ const crypto = require("crypto");
 const { sendVerificationEmail } = require("../utils/sendVerificationEmail");
 const { createVerificationToken } = require("../utils/verificationToken");
 const { sendPasswordResetEmail } = require("../utils/sendPasswordResetEmail");
+const { getFrontendUrl } = require("../utils/frontendUrl");
+
+const normalizeEmail = (email) => String(email || "").trim().toLowerCase();
+
+const normalizePassword = (password) => String(password ?? "");
 
 const isStrongPassword = (password) => {
-    if (typeof password !== "string") return false;
-    if (password.length < 8) return false;
-    if (!/[a-z]/.test(password)) return false;
-    if (!/[A-Z]/.test(password)) return false;
-    if (!/[0-9]/.test(password)) return false;
-    if (!/[^A-Za-z0-9]/.test(password)) return false;
+    const pwd = normalizePassword(password);
+    if (!pwd) return false;
+    if (pwd.length < 8) return false;
+    if (!/[a-z]/.test(pwd)) return false;
+    if (!/[A-Z]/.test(pwd)) return false;
+    if (!/[0-9]/.test(pwd)) return false;
+    if (!/[^A-Za-z0-9]/.test(pwd)) return false;
     return true;
 };
 
@@ -20,21 +26,28 @@ const isStrongPassword = (password) => {
 exports.register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
-        if (!name || !email || !password) {
+        const normalizedEmail = normalizeEmail(email);
+        const plainPassword = normalizePassword(password);
+
+        if (!name?.trim() || !normalizedEmail || !plainPassword) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
-        if (!isStrongPassword(password)) {
+        if (!isStrongPassword(plainPassword)) {
             return res.status(400).json({
                 message: "Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character."
             });
         }
 
-        const userExists = await User.findOne({ email });
+        const userExists = await User.findOne({ email: normalizedEmail });
         if (userExists) {
             if (userExists.isVerified) {
                 return res.status(400).json({ message: "User already exists" });
             }
+
+            // Unverified account: update password & name so login matches latest registration attempt
+            userExists.name = String(name).trim();
+            userExists.password = await bcrypt.hash(plainPassword, 10);
 
             const {
                 rawToken: rawVerificationToken,
@@ -66,7 +79,7 @@ exports.register = async (req, res) => {
             });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(plainPassword, 10);
         const {
             rawToken: rawVerificationToken,
             hashedToken: verificationToken,
@@ -74,8 +87,8 @@ exports.register = async (req, res) => {
         } = createVerificationToken();
 
         const user = await User.create({
-            name,
-            email,
+            name: String(name).trim(),
+            email: normalizedEmail,
             password: hashedPassword,
             isVerified: false,
             verificationToken,
@@ -132,23 +145,27 @@ exports.logout = (req, res) => {
 // LOGIN
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        if (!email || !password) {
+        const normalizedEmail = normalizeEmail(req.body.email);
+        const plainPassword = normalizePassword(req.body.password);
+
+        if (!normalizedEmail || !plainPassword) {
             return res.status(400).json({ message: "Email and password are required" });
         }
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: normalizedEmail });
         if (!user) {
             return res.status(400).json({ message: "User not found" });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ message: "Invalid credentials" });
-        }
-
         if (!user.isVerified) {
             return res.status(403).json({ message: "Please verify your email first." });
+        }
+
+        const isMatch = await bcrypt.compare(plainPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({
+                message: "Invalid credentials. If you registered again before verifying, use Forgot Password to set a new password."
+            });
         }
 
         const token = jwt.sign(
@@ -182,13 +199,15 @@ exports.login = async (req, res) => {
     }
 };
 
-// VERIFY EMAIL
+// VERIFY EMAIL — verifies token and redirects browser to login page
 exports.verifyEmail = async (req, res) => {
+    const frontendUrl = getFrontendUrl();
+
     try {
         const token = req.query.token;
 
         if (!token || typeof token !== "string") {
-            return res.status(400).json({ message: "Verification token is required." });
+            return res.redirect(`${frontendUrl}/login?verifyError=${encodeURIComponent("Verification token is missing.")}`);
         }
 
         const hashedToken = crypto
@@ -217,26 +236,24 @@ exports.verifyEmail = async (req, res) => {
         );
 
         if (!user) {
-            return res.status(400).json({
-                message: "Verification token is invalid, expired, or already used."
-            });
+            return res.redirect(`${frontendUrl}/login?verifyError=${encodeURIComponent("Verification link is invalid, expired, or already used.")}`);
         }
 
-        return res.status(200).json({ message: "Email verified successfully." });
+        return res.redirect(`${frontendUrl}/login?verified=true`);
     } catch (error) {
-        return res.status(500).json({ message: "Something went wrong while verifying your email." });
+        return res.redirect(`${frontendUrl}/login?verifyError=${encodeURIComponent("Something went wrong. Please try again.")}`);
     }
 };
 
 // RESEND VERIFICATION EMAIL
 exports.resendVerificationEmail = async (req, res) => {
     try {
-        const { email } = req.body;
-        if (!email) {
+        const normalizedEmail = normalizeEmail(req.body.email);
+        if (!normalizedEmail) {
             return res.status(400).json({ message: "Email is required" });
         }
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: normalizedEmail });
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -279,12 +296,12 @@ exports.resendVerificationEmail = async (req, res) => {
 // FORGOT PASSWORD
 exports.forgotPassword = async (req, res) => {
     try {
-        const { email } = req.body;
-        if (!email) {
+        const normalizedEmail = normalizeEmail(req.body.email);
+        if (!normalizedEmail) {
             return res.status(400).json({ message: "Email is required" });
         }
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: normalizedEmail });
         if (!user) {
             // Don't reveal if account exists or not.
             return res.status(200).json({
@@ -327,13 +344,13 @@ exports.forgotPassword = async (req, res) => {
 exports.resetPassword = async (req, res) => {
     try {
         const { token } = req.params;
-        const { password } = req.body;
+        const plainPassword = normalizePassword(req.body.password);
 
-        if (!token || !password) {
+        if (!token || !plainPassword) {
             return res.status(400).json({ message: "Token and password are required" });
         }
 
-        if (!isStrongPassword(password)) {
+        if (!isStrongPassword(plainPassword)) {
             return res.status(400).json({
                 message: "Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character."
             });
@@ -353,7 +370,7 @@ exports.resetPassword = async (req, res) => {
             return res.status(400).json({ message: "Reset token is invalid or expired" });
         }
 
-        user.password = await bcrypt.hash(password, 10);
+        user.password = await bcrypt.hash(plainPassword, 10);
         user.passwordResetToken = null;
         user.passwordResetTokenExpires = null;
         await user.save();

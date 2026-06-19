@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { API_BASE } from "../config/api";
 
 const ResetPassword = () => {
     const [searchParams] = useSearchParams();
@@ -39,7 +40,7 @@ const ResetPassword = () => {
         setMessage("");
         try {
             const res = await axios.post(
-                `http://localhost:8080/api/auth/reset-password/${encodeURIComponent(token)}`,
+                `${API_BASE}/api/auth/reset-password/${encodeURIComponent(token)}`,
                 { password },
                 { withCredentials: true }
             );

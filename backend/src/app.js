@@ -12,12 +12,13 @@ const orderRoutes = require("./routes/order.routes");
 const cartRoutes = require("./routes/cart.routes");
 const contactRoutes = require("./routes/contact.routes");
 const reviewRoutes  = require("./routes/review.routes");
+const chatbotRoutes = require("./routes/chatbot.routes");
 
 const app = express();
 
 const allowedOrigins = (process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(",").map((origin) => origin.trim())
-    : ["http://localhost:5173", "http://localhost:5174"]);
+    : ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"]);
 
 const corsOptions = {
     origin: (origin, callback) => {
@@ -62,6 +63,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/products/:productId/reviews", reviewRoutes);
+app.use("/api/chat", chatbotRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

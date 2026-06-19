@@ -36,7 +36,7 @@ const TopBar = () => {
         <div className="flex items-center gap-2">
           <FaMapMarkerAlt className="text-red-300" />
           <a
-            href="https://www.google.com/maps?q=मध्यपुर+ठिमी+-०२,+दिव्यश्वरी+प्लान्निङ"
+            href="https://maps.app.goo.gl/SXAcPmbRGe1fJLga6"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-red-300 hover:underline transition"

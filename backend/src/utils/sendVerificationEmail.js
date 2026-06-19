@@ -32,10 +32,9 @@ const sendVerificationEmail = async (toEmail, token) => {
         throw err;
     }
 
-    // POINT DIRECTLY TO THE FRONTEND
-    const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:5173").replace(/\/$/, "");
+    const backendUrl = (process.env.BACKEND_URL || "http://localhost:8080").replace(/\/$/, "");
     const verificationLink =
-        `${frontendUrl}/verify-email?token=${encodeURIComponent(token)}`;
+        `${backendUrl}/api/auth/verify-email?token=${encodeURIComponent(token)}`;
     const fromName = process.env.SMTP_FROM_NAME || "Rastriya Khadya Bank Mart";
     const fromEmail = process.env.SMTP_FROM || process.env.SMTP_USER;
     const appName = "Rastriya Khadya Bank Mart";
@@ -57,7 +56,7 @@ const sendVerificationEmail = async (toEmail, token) => {
             from: `"${fromName}" <${fromEmail}>`,
             to: toEmail,
             subject: "Verify your email – Rastriya Khadya Bank Mart",
-            text: `Welcome to ${appName}!\nPlease verify your email by clicking this link (valid for 15 minutes):\n${verificationLink}\n\nयदि तपाईंले खाता बनाउनुभएको छैन भने, कृपया यो इमेल बेवास्ता गर्नुहोस्।\nकृपया आफ्नो इमेल प्रमाणित गर्न यो लिङ्क क्लिक गर्नुहोस्: \n ${verificationLink}`,
+            text: `Welcome to ${appName}!\nPlease verify your email by clicking the button in the HTML version of this email.\nThis link is valid for 15 minutes.\n\nयदि तपाईंले खाता बनाउनुभएको छैन भने, कृपया यो इमेल बेवास्ता गर्नुहोस्।`,
             html: `
                 <div style="margin:0;padding:24px;background:#f3f4f6;font-family:Arial,sans-serif;">
                     <div style="max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
@@ -95,14 +94,9 @@ const sendVerificationEmail = async (toEmail, token) => {
                                 </a>
                             </div>
 
-                            <!-- Footer Links -->
+                            <!-- Footer -->
                             <div style="margin-top:24px; padding-top:20px; border-top: 1px solid #f3f4f6;">
-                                <p style="margin:0;color:#6b7280;font-size:12px;line-height:1.5;word-break:break-all;">
-                                    If the button does not work, copy this link:<br/>
-                                    यदि बटनले काम गरेन भने, यो लिङ्क कपी गर्नुहोस्:<br/>
-                                    <a href="${verificationLink}" style="color:#16a34a;">${verificationLink}</a>
-                                </p>
-                                <p style="margin:14px 0 0;color:#9ca3af;font-size:12px;line-height:1.5;">
+                                <p style="margin:0;color:#9ca3af;font-size:12px;line-height:1.5;">
                                     If you did not create an account, you can safely ignore this email.<br/>
                                     यदि तपाईंले खाता बनाउनुभएको छैन भने, कृपया यो इमेल बेवास्ता गर्नुहोस्।
                                 </p>

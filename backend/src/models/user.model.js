@@ -6,13 +6,27 @@ const addressSchema = new mongoose.Schema({
         enum: ["home", "work", "other"],
         default: "home"
     },
+    recipientName: {
+        type: String,
+        default: "",
+        trim: true
+    },
     street: {
         type: String,
         required: true
     },
+    landmark: {
+        type: String,
+        default: "",
+        trim: true
+    },
     city: {
         type: String,
         required: true
+    },
+    district: {
+        type: String,
+        default: ""
     },
     state: {
         type: String,
@@ -20,7 +34,7 @@ const addressSchema = new mongoose.Schema({
     },
     zipCode: {
         type: String,
-        required: true
+        default: ""
     },
     country: {
         type: String,

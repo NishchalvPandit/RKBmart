@@ -92,10 +92,21 @@ exports.getAddresses = async (req, res) => {
 // ADD address
 exports.addAddress = async (req, res) => {
     try {
-        const { label, street, city, state, zipCode, country, phoneNumber, isDefault } = req.body;
+        const {
+            label,
+            recipientName,
+            street,
+            landmark,
+            city,
+            state,
+            zipCode,
+            country,
+            phoneNumber,
+            isDefault
+        } = req.body;
 
-        if (!street || !city || !state || !zipCode || !phoneNumber) {
-            return res.status(400).json({ message: "All fields are required" });
+        if (!street || !city || !state || !phoneNumber) {
+            return res.status(400).json({ message: "Street, city, province, and phone are required" });
         }
 
         const user = await User.findById(req.user.id);
@@ -112,10 +123,12 @@ exports.addAddress = async (req, res) => {
 
         const newAddress = {
             label: label || "home",
+            recipientName: recipientName || "",
+            landmark: landmark || "",
             street,
             city,
             state,
-            zipCode,
+            zipCode: zipCode || "",
             country: country || "Nepal",
             phoneNumber,
             isDefault: shouldBeDefault
@@ -134,7 +147,18 @@ exports.addAddress = async (req, res) => {
 exports.updateAddress = async (req, res) => {
     try {
         const { addressId } = req.params;
-        const { label, street, city, state, zipCode, country, phoneNumber, isDefault } = req.body;
+        const {
+            label,
+            recipientName,
+            street,
+            landmark,
+            city,
+            state,
+            zipCode,
+            country,
+            phoneNumber,
+            isDefault
+        } = req.body;
 
         const user = await User.findById(req.user.id);
         const address = user.addresses.id(addressId);
@@ -151,13 +175,20 @@ exports.updateAddress = async (req, res) => {
         }
 
         if (label) address.label = label;
+        if (typeof recipientName === "string") address.recipientName = recipientName.trim();
+        if (typeof landmark === "string") address.landmark = landmark.trim();
         if (street) address.street = street;
         if (city) address.city = city;
         if (state) address.state = state;
-        if (zipCode) address.zipCode = zipCode;
+        if (typeof zipCode === "string") address.zipCode = zipCode;
         if (country) address.country = country;
         if (phoneNumber) address.phoneNumber = phoneNumber;
         if (typeof isDefault !== 'undefined') address.isDefault = isDefault;
+
+        // Ensure at least one default address exists when user has addresses.
+        if (user.addresses.length > 0 && !user.addresses.some(addr => addr.isDefault)) {
+            user.addresses[0].isDefault = true;
+        }
 
         await user.save();
 
@@ -172,8 +203,20 @@ exports.deleteAddress = async (req, res) => {
     try {
         const { addressId } = req.params;
         const user = await User.findById(req.user.id);
-        
-        user.addresses.id(addressId).remove();
+
+        const address = user.addresses.id(addressId);
+        if (!address) {
+            return res.status(404).json({ message: "Address not found" });
+        }
+
+        const wasDefault = address.isDefault;
+        address.deleteOne();
+
+        // If default address was removed, promote the first remaining address.
+        if (wasDefault && user.addresses.length > 0) {
+            user.addresses[0].isDefault = true;
+        }
+
         await user.save();
 
         res.json({ message: "Address deleted successfully" });

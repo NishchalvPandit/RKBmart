@@ -11,7 +11,12 @@ const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const { itemCount } = useCart();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const handleLanguageChange = () => {
+    const newLang = i18n.language === "en" ? "np" : "en";
+    i18n.changeLanguage(newLang);
+  };
   const [searchTerm, setSearchTerm] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -139,6 +144,17 @@ const Navbar = () => {
               </span>
             </Link>
 
+            {/* Language (mobile / small screens — TopBar is hidden below md) */}
+            <button
+              type="button"
+              onClick={handleLanguageChange}
+              className="md:hidden shrink-0 px-2 py-1 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 hover:border-green-600/40 transition text-[10px] font-bold leading-tight"
+              title={i18n.language === "en" ? "Switch to Nepali" : "Switch to English"}
+              aria-label={i18n.language === "en" ? "Switch to Nepali" : "Switch to English"}
+            >
+              {i18n.language === "en" ? "🇺🇸 ENG" : "🇳🇵 नेपाली"}
+            </button>
+
             {/* Auth Links - Desktop */}
             <div className="hidden md:flex items-center gap-1 border-l pl-3 ml-1">
               {user ? (
@@ -149,7 +165,10 @@ const Navbar = () => {
                       className="flex items-center gap-1.5 text-xs font-bold bg-green-700 text-white px-3 py-1.5 rounded-full hover:bg-green-800 transition shadow-sm"
                       title={t("navbar.adminPanel")}
                     >
-                      🛡️ {t("navbar.adminBadge")}
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                      </svg>
+                      {t("navbar.adminBadge")}
                     </Link>
                   )}
                   <Link
@@ -276,7 +295,9 @@ const Navbar = () => {
                         onClick={() => setIsMobileMenuOpen(false)}
                         className="flex items-center gap-3 py-3 px-4 rounded-lg bg-green-700 text-white font-bold"
                       >
-                        <span className="text-lg">🛡️</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
                         {t("navbar.adminPanel")}
                       </Link>
                     )}

@@ -7,16 +7,26 @@ import { buildProductsListUrl } from "../services/productCatalog";
 /* ─── constants ─────────────────────────────────────────────────── */
 const CATEGORIES = ["All", "Grains", "Pulses", "Fruits", "Oils", "Organic", "Vegetables"];
 
+const CAT_LABEL_KEYS = {
+    All: "pages.products.catAll",
+    Grains: "pages.products.catGrains",
+    Pulses: "pages.products.catPulses",
+    Fruits: "pages.products.catFruits",
+    Oils: "pages.products.catOils",
+    Organic: "pages.products.catOrganic",
+    Vegetables: "pages.products.catVegetables",
+};
+
 const SORT_OPTIONS = [
-    { value: "newest",     label: "Newest First" },
-    { value: "popular",    label: "Most Popular" },
-    { value: "price_asc",  label: "Price: Low → High" },
-    { value: "price_desc", label: "Price: High → Low" },
+    { value: "newest",     labelKey: "pages.products.sortNewest" },
+    { value: "popular",    labelKey: "pages.products.sortPopular" },
+    { value: "price_asc",  labelKey: "pages.products.sortPriceAsc" },
+    { value: "price_desc", labelKey: "pages.products.sortPriceDesc" },
 ];
 
 const CAT_ICONS = {
-    All: "🛒", Grains: "🌾", Pulses: "🫘",
-    Fruits: "🍎", Oils: "🫙", Organic: "🌿", Vegetables: "🥦",
+    All: null, Grains: null, Pulses: null,
+    Fruits: null, Oils: null, Organic: null, Vegetables: null,
 };
 
 function initialKeywordFromBrowser() {
@@ -123,7 +133,7 @@ export default function Products() {
                             letterSpacing: "0.06em", textTransform: "uppercase",
                             border: "1px solid rgba(255,255,255,0.2)",
                         }}>
-                            Rastriya Khadya Bank
+                            {t("pages.products.heroBadge")}
                         </span>
                     </div>
                     <h1 style={{
@@ -134,7 +144,7 @@ export default function Products() {
                         {t("pages.products.title") || "Our Products"}
                     </h1>
                     <p style={{ color: "rgba(255,255,255,0.75)", margin: 0, fontSize: "1rem" }}>
-                        Quality food staples — fresh, verified, delivered.
+                        {t("pages.products.heroSubtitle")}
                     </p>
 
                     {/* Search bar */}
@@ -159,7 +169,7 @@ export default function Products() {
                                 value={draft}
                                 onChange={(e) => setDraft(e.target.value)}
                                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applySearch(); } }}
-                                placeholder="Search products…"
+                                placeholder={t("pages.products.searchPlaceholder")}
                                 style={{
                                     flex: 1, border: "none", background: "transparent",
                                     color: "#fff", fontSize: "0.95rem", outline: "none",
@@ -186,7 +196,7 @@ export default function Products() {
                                 flexShrink: 0,
                             }}
                         >
-                            Search
+                            {t("pages.products.search")}
                         </button>
                         {/* Mobile filter btn */}
                         <button
@@ -205,7 +215,7 @@ export default function Products() {
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                 <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
                             </svg>
-                            Filters
+                            {t("pages.products.filters")}
                         </button>
                     </div>
                 </div>
@@ -236,22 +246,21 @@ export default function Products() {
                     {/* Sidebar header */}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
                         <span style={{ fontWeight: 800, fontSize: "0.95rem", color: "#0f172a", letterSpacing: "-0.01em" }}>
-                            Filters
+                            {t("pages.products.filters")}
                         </span>
                         {hasFilters && (
                             <button onClick={clearAll} style={{
-                                background: "none", border: "none", cursor: "pointer",
+                                background: "#fef2f2", border: "none", cursor: "pointer",
                                 color: "#dc2626", fontSize: "0.75rem", fontWeight: 700,
                                 padding: "0.2rem 0.5rem", borderRadius: 6,
-                                background: "#fef2f2",
                             }}>
-                                Reset all
+                                {t("pages.products.resetAll")}
                             </button>
                         )}
                     </div>
 
                     {/* Category */}
-                    <FilterSection title="Category">
+                    <FilterSection title={t("pages.products.category")}>
                         {CATEGORIES.map((cat) => (
                             <button
                                 key={cat}
@@ -270,23 +279,31 @@ export default function Products() {
                                     marginBottom: 3,
                                 }}
                             >
-                                <span style={{ fontSize: "1rem", lineHeight: 1 }}>{CAT_ICONS[cat] || "📦"}</span>
-                                {cat}
+                                <span style={{ display: "flex", alignItems: "center", color: "inherit" }}>
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>
+                                  </svg>
+                                </span>
+                                {t(CAT_LABEL_KEYS[cat])}
                                 {category === cat && (
-                                    <span style={{ marginLeft: "auto", fontSize: "0.65rem", color: "#2d9e5f" }}>✓</span>
+                                    <span style={{ marginLeft: "auto", display: "flex", alignItems: "center", color: "#334155" }}>
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                      </svg>
+                                    </span>
                                 )}
                             </button>
                         ))}
                     </FilterSection>
 
                     {/* Price */}
-                    <FilterSection title="Price Range (Rs)">
+                    <FilterSection title={t("pages.products.priceRange")}>
                         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                             <input
                                 id="min-price"
                                 type="number"
                                 min={0}
-                                placeholder="Min"
+                                placeholder={t("pages.products.minPlaceholder")}
                                 value={minPrice}
                                 onChange={(e) => setMinPrice(e.target.value)}
                                 style={numInputStyle}
@@ -296,7 +313,7 @@ export default function Products() {
                                 id="max-price"
                                 type="number"
                                 min={0}
-                                placeholder="Max"
+                                placeholder={t("pages.products.maxPlaceholder")}
                                 value={maxPrice}
                                 onChange={(e) => setMaxPrice(e.target.value)}
                                 style={numInputStyle}
@@ -305,7 +322,7 @@ export default function Products() {
                     </FilterSection>
 
                     {/* Sort */}
-                    <FilterSection title="Sort By">
+                    <FilterSection title={t("pages.products.sortBy")}>
                         {SORT_OPTIONS.map((opt) => (
                             <button
                                 key={opt.value}
@@ -324,9 +341,13 @@ export default function Products() {
                                     display: "flex", alignItems: "center", justifyContent: "space-between",
                                 }}
                             >
-                                {opt.label}
+                                {t(opt.labelKey)}
                                 {sort === opt.value && (
-                                    <span style={{ fontSize: "0.65rem", color: "#2d9e5f" }}>✓</span>
+                                    <span style={{ display: "flex", alignItems: "center", color: "#334155" }}>
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                      </svg>
+                                    </span>
                                 )}
                             </button>
                         ))}
@@ -348,18 +369,18 @@ export default function Products() {
                                 <Chip label={`"${keywordActive}"`} onRemove={() => { setDraft(""); setSearchParams({}, { replace: true }); }} />
                             )}
                             {category !== "All" && (
-                                <Chip label={`${CAT_ICONS[category]} ${category}`} onRemove={() => setCategory("All")} />
+                                <Chip label={t(CAT_LABEL_KEYS[category])} onRemove={() => setCategory("All")} />
                             )}
                             {(minPrice || maxPrice) && (
                                 <Chip label={`Rs ${minPrice || "0"} – ${maxPrice || "∞"}`} onRemove={() => { setMinPrice(""); setMaxPrice(""); }} />
                             )}
                             {sort !== "newest" && (
-                                <Chip label={SORT_OPTIONS.find((o) => o.value === sort)?.label} onRemove={() => setSort("newest")} />
+                                <Chip label={t(SORT_OPTIONS.find((o) => o.value === sort)?.labelKey)} onRemove={() => setSort("newest")} />
                             )}
                         </div>
                         {!loading && !error && (
                             <span style={{ fontSize: "0.82rem", color: "#94a3b8", fontWeight: 500, whiteSpace: "nowrap" }}>
-                                {products.length} {products.length === 1 ? "product" : "products"}
+                                {products.length} {t(products.length === 1 ? "pages.products.product" : "pages.products.products")}
                             </span>
                         )}
                     </div>
@@ -388,15 +409,20 @@ export default function Products() {
                     )}
 
                     {/* Error */}
-                    {!loading && error && (
+                    {error && (
                         <div style={{
                             background: "#fff", borderRadius: 18,
-                            border: "1px solid #fecaca",
+                            border: "1px solid #f1f5f9",
                             padding: "3rem 2rem", textAlign: "center",
                         }}>
-                            <div style={{ fontSize: "2rem", marginBottom: 12 }}>⚠️</div>
-                            <p style={{ color: "#dc2626", fontWeight: 600, margin: 0 }}>{error}</p>
+                            <div style={{ marginBottom: 16, display: "flex", justifyContent: "center", color: "#f87171" }}>
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="m10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                                </svg>
+                            </div>
+                            <p style={{ color: "#ef4444", fontWeight: 600, margin: 0 }}>{error}</p>
                             <button
+                                type="button"
                                 onClick={() => window.location.reload()}
                                 style={{
                                     marginTop: 16, background: "#fef2f2",
@@ -405,7 +431,7 @@ export default function Products() {
                                     fontWeight: 600, cursor: "pointer", fontSize: "0.85rem",
                                 }}
                             >
-                                Try Again
+                                {t("pages.products.tryAgain")}
                             </button>
                         </div>
                     )}
@@ -417,10 +443,14 @@ export default function Products() {
                             border: "1px solid #e2e8f0",
                             padding: "4rem 2rem", textAlign: "center",
                         }}>
-                            <div style={{ fontSize: "3rem", marginBottom: 12 }}>🔍</div>
-                            <h3 style={{ color: "#0f172a", fontWeight: 700, margin: "0 0 8px" }}>No products found</h3>
+                            <div style={{ marginBottom: 16, display: "flex", justifyContent: "center", color: "#e2e8f0" }}>
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                                </svg>
+                            </div>
+                            <h3 style={{ color: "#0f172a", fontWeight: 700, margin: "0 0 8px" }}>{t("pages.products.noProductsFound")}</h3>
                             <p style={{ color: "#94a3b8", fontSize: "0.9rem", margin: "0 0 20px" }}>
-                                Try adjusting your filters or search term
+                                {t("pages.products.adjustFilters")}
                             </p>
                             <button
                                 onClick={clearAll}
@@ -432,7 +462,7 @@ export default function Products() {
                                     boxShadow: "0 4px 14px rgba(26,107,60,0.3)",
                                 }}
                             >
-                                Clear Filters
+                                {t("pages.products.clearFilters")}
                             </button>
                         </div>
                     )}
@@ -475,11 +505,11 @@ export default function Products() {
                 }}
             >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
-                    <span style={{ fontWeight: 800, fontSize: "1rem", color: "#0f172a" }}>Filters</span>
+                    <span style={{ fontWeight: 800, fontSize: "1rem", color: "#0f172a" }}>{t("pages.products.filters")}</span>
                     <button onClick={() => setMobileSidebar(false)} style={{ background: "none", border: "none", fontSize: "1.5rem", cursor: "pointer", color: "#64748b" }}>×</button>
                 </div>
                 {/* ── Category (mobile) ── */}
-                <FilterSection title="Category">
+                <FilterSection title={t("pages.products.category")}>
                     {CATEGORIES.map((cat) => (
                         <button key={cat} onClick={() => { setCategory(cat); setMobileSidebar(false); }}
                             style={{
@@ -495,18 +525,23 @@ export default function Products() {
                                 transition: "all 0.15s", marginBottom: 3,
                             }}
                         >
-                            <span>{CAT_ICONS[cat] || "📦"}</span>{cat}
+                            <span style={{ display: "flex", alignItems: "center", color: "inherit" }}>
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>
+                              </svg>
+                            </span>
+                            {t(CAT_LABEL_KEYS[cat])}
                         </button>
                     ))}
                 </FilterSection>
-                <FilterSection title="Price Range (Rs)">
+                <FilterSection title={t("pages.products.priceRange")}>
                     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                        <input id="mobile-min-price" type="number" min={0} placeholder="Min" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} style={numInputStyle} />
+                        <input id="mobile-min-price" type="number" min={0} placeholder={t("pages.products.minPlaceholder")} value={minPrice} onChange={(e) => setMinPrice(e.target.value)} style={numInputStyle} />
                         <span style={{ color: "#cbd5e1", fontWeight: 700 }}>—</span>
-                        <input id="mobile-max-price" type="number" min={0} placeholder="Max" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} style={numInputStyle} />
+                        <input id="mobile-max-price" type="number" min={0} placeholder={t("pages.products.maxPlaceholder")} value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} style={numInputStyle} />
                     </div>
                 </FilterSection>
-                <FilterSection title="Sort By">
+                <FilterSection title={t("pages.products.sortBy")}>
                     {SORT_OPTIONS.map((opt) => (
                         <button key={opt.value} onClick={() => { setSort(opt.value); setMobileSidebar(false); }}
                             style={{
@@ -521,7 +556,7 @@ export default function Products() {
                                 transition: "all 0.15s", marginBottom: 3,
                             }}
                         >
-                            {opt.label}
+                            {t(opt.labelKey)}
                         </button>
                     ))}
                 </FilterSection>
@@ -533,7 +568,7 @@ export default function Products() {
                             color: "#dc2626", borderRadius: 12, padding: "0.6rem",
                             fontWeight: 700, cursor: "pointer", fontSize: "0.9rem",
                         }}
-                    >Reset all filters</button>
+                    >{t("pages.products.resetAllFilters")}</button>
                 )}
             </div>
 
@@ -578,8 +613,8 @@ function Chip({ label, onRemove }) {
     return (
         <span style={{
             display: "inline-flex", alignItems: "center", gap: 5,
-            background: "#f0fdf4", border: "1px solid #bbf7d0",
-            color: "#166534", borderRadius: 999,
+            background: "#f1f5f9", border: "1px solid #e2e8f0",
+            color: "#475569", borderRadius: 999,
             padding: "0.3rem 0.85rem 0.3rem 0.75rem",
             fontSize: "0.78rem", fontWeight: 700,
         }}>

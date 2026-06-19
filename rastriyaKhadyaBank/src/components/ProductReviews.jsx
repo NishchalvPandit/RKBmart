@@ -328,9 +328,12 @@ export default function ProductReviews({ productId }) {
                     background: "#f0fdf4", border: "1px solid #bbf7d0",
                     borderRadius: 12, padding: "0.85rem 1.25rem",
                     color: "#166534", fontSize: "0.88rem", marginBottom: "2rem",
-                    fontWeight: 600,
+                    fontWeight: 600, display: "flex", alignItems: "center", gap: 8
                 }}>
-                    ✓ You have already reviewed this product.
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    You have already reviewed this product.
                 </div>
             )}
 

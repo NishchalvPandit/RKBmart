@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const { getFrontendUrl } = require("./frontendUrl");
 
 const requiredEnv = ["SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS"];
 
@@ -31,7 +32,7 @@ const sendPasswordResetEmail = async (toEmail, token) => {
         throw err;
     }
 
-    const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:5173").replace(/\/$/, "");
+    const frontendUrl = getFrontendUrl();
     const resetLink = `${frontendUrl}/reset-password?token=${encodeURIComponent(token)}`;
     const fromName = process.env.SMTP_FROM_NAME || "Rastriya Khadya Bank Mart";
     const fromEmail = process.env.SMTP_FROM || process.env.SMTP_USER;
@@ -54,7 +55,7 @@ const sendPasswordResetEmail = async (toEmail, token) => {
             from: `"${fromName}" <${fromEmail}>`,
             to: toEmail,
             subject: "Reset your password – Rastriya Khadya Bank Mart",
-            text: `You requested a password reset for ${appName}.\n\nUse this link (valid for 1 hour):\n${resetLink}\n\nIf you did not request this, ignore this email.`,
+            text: `You requested a password reset for ${appName}.\n\nPlease use the button in the HTML version of this email to reset your password.\nThis link is valid for 1 hour.\n\nIf you did not request this, ignore this email.`,
             html: `
                 <div style="margin:0;padding:24px;background:#f3f4f6;font-family:Arial,sans-serif;">
                     <div style="max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
@@ -72,11 +73,7 @@ const sendPasswordResetEmail = async (toEmail, token) => {
                             <a href="${resetLink}" style="display:inline-block;background:#16a34a;color:#ffffff;text-decoration:none;font-weight:700;font-size:14px;padding:10px 16px;border-radius:8px;">
                                 Reset Password
                             </a>
-                            <p style="margin:18px 0 0;color:#6b7280;font-size:12px;line-height:1.5;word-break:break-all;">
-                                If the button does not work, copy this link:<br/>
-                                <a href="${resetLink}" style="color:#16a34a;">${resetLink}</a>
-                            </p>
-                            <p style="margin:14px 0 0;color:#9ca3af;font-size:12px;line-height:1.5;">
+                            <p style="margin:18px 0 0;color:#9ca3af;font-size:12px;line-height:1.5;">
                                 If you did not request this, you can safely ignore this email.
                             </p>
                         </div>

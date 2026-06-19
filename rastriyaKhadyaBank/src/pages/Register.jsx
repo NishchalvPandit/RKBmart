@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaUser, FaEnvelope, FaLock, FaUserPlus } from 'react-icons/fa';
+import { API_BASE } from '../config/api';
 
 const Register = () => {
     const { t } = useTranslation();
@@ -39,7 +40,15 @@ const Register = () => {
         setBannerTone(null);
         setStatusMessage('');
         try {
-            const res = await axios.post('http://localhost:8080/api/auth/register', formData, { withCredentials: true });
+            const res = await axios.post(
+                `${API_BASE}/api/auth/register`,
+                {
+                    name: formData.name.trim(),
+                    email: formData.email.trim().toLowerCase(),
+                    password: formData.password,
+                },
+                { withCredentials: true }
+            );
             setRegistrationDone(true);
             setStatusMessage(res.data?.message || t("auth.verifyEmailAfterRegister"));
         } catch (err) {
@@ -61,8 +70,8 @@ const Register = () => {
         setResendingVerification(true);
         try {
             const res = await axios.post(
-                'http://localhost:8080/api/auth/resend-verification',
-                { email: formData.email },
+                `${API_BASE}/api/auth/resend-verification`,
+                { email: formData.email.trim().toLowerCase() },
                 { withCredentials: true }
             );
             setStatusMessage(res.data?.message || t("auth.resendVerificationSuccess"));

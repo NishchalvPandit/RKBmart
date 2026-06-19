@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { FaEnvelope, FaLock } from 'react-icons/fa';
 import { API_BASE } from '../config/api';
 
@@ -25,7 +25,12 @@ const Login = () => {
     const { login } = useContext(AuthContext);
     const { fetchCart } = useCart();
 
-    const successMessage = location.state?.message;
+    const [searchParams] = useSearchParams();
+    const verifiedFromEmail = searchParams.get("verified") === "true";
+    const verifyError = searchParams.get("verifyError");
+    const successMessage = verifiedFromEmail
+        ? "Email verified successfully! You can now log in."
+        : location.state?.message;
 
     const clearErrors = () => {
         setEmailError('');
@@ -41,7 +46,7 @@ const Login = () => {
         setSubmitting(true);
         try {
             const res = await axios.post(`${API_BASE}/api/auth/login`,
-                { email, password },
+                { email: email.trim().toLowerCase(), password },
                 { withCredentials: true }
             );
             login(res.data.user);
@@ -55,10 +60,12 @@ const Login = () => {
                 'Login failed';
 
             const lower = message.toLowerCase();
-            if (lower.includes('password') || lower.includes('credentials') || lower.includes('invalid')) {
-                setPasswordError(message);
-            } else if (lower.includes('email') || lower.includes('user not found')) {
+            if (lower.includes('verify your email')) {
+                setGeneralError(message);
+            } else if (lower.includes('user not found')) {
                 setEmailError(message);
+            } else if (lower.includes('credentials') || lower.includes('invalid') || lower.includes('password')) {
+                setPasswordError(message);
             } else {
                 setGeneralError(message);
             }
@@ -77,7 +84,7 @@ const Login = () => {
         try {
             const res = await axios.post(
                 `${API_BASE}/api/auth/forgot-password`,
-                { email: forgotEmail },
+                { email: forgotEmail.trim().toLowerCase() },
                 { withCredentials: true }
             );
             setForgotIsError(false);
@@ -110,6 +117,13 @@ const Login = () => {
                         <div className="mb-8 px-4 py-3 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center gap-3">
                             <div className="w-2 h-2 rounded-full bg-emerald-500" />
                             <p className="text-sm text-emerald-700 font-bold leading-tight">{successMessage}</p>
+                        </div>
+                    )}
+
+                    {verifyError && (
+                        <div className="mb-8 px-4 py-3 bg-amber-50 border border-amber-100 rounded-2xl flex items-center gap-3">
+                            <div className="w-2 h-2 rounded-full bg-amber-500" />
+                            <p className="text-sm text-amber-700 font-bold leading-tight">{verifyError}</p>
                         </div>
                     )}
 

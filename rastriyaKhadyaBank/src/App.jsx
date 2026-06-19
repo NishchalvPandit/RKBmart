@@ -24,6 +24,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import AdminPanel from "./pages/AdminPanel";
+import Chatbot from "./components/Chatbot";
 
 const AppLayout = () => {
   const { t } = useTranslation();
@@ -96,6 +97,7 @@ const App = () => {
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/*" element={<AppLayout />} />
       </Routes>
+      <Chatbot />
     </BrowserRouter>
   );
 };
