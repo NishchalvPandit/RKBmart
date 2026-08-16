@@ -12,14 +12,14 @@ const parseMaxAgeMs = (expiry) => {
 const authCookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: parseMaxAgeMs(JWT_ACCESS_EXPIRY),
 };
 
 const clearAuthCookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     expires: new Date(0),
 };
 

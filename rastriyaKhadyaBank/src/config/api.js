@@ -2,4 +2,4 @@
 export const API_BASE =
     typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL
         ? String(import.meta.env.VITE_API_URL).replace(/\/$/, "")
-        : "http://localhost:8080";
+        : "https://rkbmart-1.onrender.com";
