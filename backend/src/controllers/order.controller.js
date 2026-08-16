@@ -69,6 +69,7 @@ exports.getAllOrders = async (req, res) => {
     try {
         const orders = await Order.find()
             .populate("userId", "name email")
+            .populate("items.productId", "name image price")
             .sort({ createdAt: -1 });
         res.json(orders);
     } catch (error) {

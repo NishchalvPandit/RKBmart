@@ -1108,9 +1108,97 @@ export default function AdminPanel() {
                                 </p>
                               </td>
 
-                              {/* Items count */}
-                              <td style={{ ...S.td, fontSize: 13 }}>
-                                {o.items?.length ?? 0} item{o.items?.length !== 1 ? "s" : ""}
+                              {/* Ordered products */}
+                              <td style={{ ...S.td, fontSize: 12, minWidth: 220, maxWidth: 320 }}>
+                                {!o.items?.length ? (
+                                  <span style={{ color: "#999" }}>—</span>
+                                ) : (
+                                  <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+                                    {o.items.map((item, itemIdx) => {
+                                      const populatedProduct =
+                                        item.productId && typeof item.productId === "object"
+                                          ? item.productId
+                                          : null;
+                                      const name =
+                                        item.name || populatedProduct?.name || "Unknown product";
+                                      const qty = item.quantity ?? 1;
+                                      const unitPrice = item.price ?? populatedProduct?.price ?? 0;
+                                      const lineTotal = unitPrice * qty;
+                                      const thumbSrc =
+                                        item.image || populatedProduct?.image || "";
+
+                                      return (
+                                        <li
+                                          key={item._id || itemIdx}
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 8,
+                                            marginBottom: itemIdx < o.items.length - 1 ? 8 : 0,
+                                          }}
+                                        >
+                                          <div
+                                            style={{
+                                              width: 32,
+                                              height: 32,
+                                              borderRadius: 6,
+                                              overflow: "hidden",
+                                              background: "#f1f5f9",
+                                              border: "1px solid #e2e8f0",
+                                              flexShrink: 0,
+                                            }}
+                                          >
+                                            {thumbSrc ? (
+                                              <img
+                                                src={thumbSrc}
+                                                alt=""
+                                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                                loading="lazy"
+                                                decoding="async"
+                                              />
+                                            ) : (
+                                              <div
+                                                style={{
+                                                  width: "100%",
+                                                  height: "100%",
+                                                  display: "flex",
+                                                  alignItems: "center",
+                                                  justifyContent: "center",
+                                                  fontSize: 10,
+                                                  color: "#94a3b8",
+                                                }}
+                                              >
+                                                —
+                                              </div>
+                                            )}
+                                          </div>
+                                          <div style={{ minWidth: 0, flex: 1 }}>
+                                            <p
+                                              style={{
+                                                margin: 0,
+                                                fontWeight: 600,
+                                                color: "#000",
+                                                lineHeight: 1.3,
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                whiteSpace: "nowrap",
+                                              }}
+                                              title={name}
+                                            >
+                                              {name}{" "}
+                                              <span style={{ fontWeight: 500, color: "#64748b" }}>
+                                                × {qty}
+                                              </span>
+                                            </p>
+                                            <p style={{ margin: "2px 0 0", fontSize: 11, color: "#64748b" }}>
+                                              Rs {Number(lineTotal).toLocaleString()}
+                                            </p>
+                                          </div>
+                                        </li>
+                                      );
+                                    })}
+                                  </ul>
+                                )}
                               </td>
 
                               {/* Total */}

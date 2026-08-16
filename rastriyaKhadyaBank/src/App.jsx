@@ -1,10 +1,5 @@
-import { Suspense, lazy } from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  useLocation,
-} from "react-router-dom";
+import { Suspense, lazy, useEffect } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -26,6 +21,18 @@ import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import NotFound from "./pages/NotFound";
 import Chatbot from "./components/Chatbot";
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [pathname]);
+
+  return null;
+};
 
 const AppLayout = () => {
   const { t } = useTranslation();
@@ -88,6 +95,7 @@ const AppRoutes = () => {
 
   return (
     <>
+      <ScrollToTop />
       <Routes>
         <Route
           path="/admin"
