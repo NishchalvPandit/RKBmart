@@ -10,8 +10,6 @@ const Register = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({ name: '', email: '', password: '' });
     const [submitting, setSubmitting] = useState(false);
-    const [registrationDone, setRegistrationDone] = useState(false);
-    const [resendingVerification, setResendingVerification] = useState(false);
     const [statusMessage, setStatusMessage] = useState('');
     const [bannerTone, setBannerTone] = useState(null);
     const passwordChecks = {
@@ -49,8 +47,12 @@ const Register = () => {
                 },
                 { withCredentials: true }
             );
-            setRegistrationDone(true);
-            setStatusMessage(res.data?.message || t("auth.verifyEmailAfterRegister"));
+            navigate('/login', {
+                replace: true,
+                state: {
+                    message: res.data?.message || t("auth.verifyEmailAfterRegister"),
+                },
+            });
         } catch (err) {
             setBannerTone('error');
             const message =
@@ -61,24 +63,6 @@ const Register = () => {
             setStatusMessage(message);
         } finally {
             setSubmitting(false);
-        }
-    };
-
-    const handleResendVerification = async () => {
-        if (!formData.email || resendingVerification) return;
-
-        setResendingVerification(true);
-        try {
-            const res = await axios.post(
-                `${API_BASE}/api/auth/resend-verification`,
-                { email: formData.email.trim().toLowerCase() },
-                { withCredentials: true }
-            );
-            setStatusMessage(res.data?.message || t("auth.resendVerificationSuccess"));
-        } catch (err) {
-            setStatusMessage(err.response?.data?.message || t("auth.error"));
-        } finally {
-            setResendingVerification(false);
         }
     };
 
@@ -98,15 +82,14 @@ const Register = () => {
                         </p>
                     </div>
 
-                    {statusMessage && !registrationDone && (
+                    {statusMessage && (
                         <div className={`mb-8 px-4 py-3 border rounded-2xl flex items-center gap-3 ${bannerTone === 'error' ? 'bg-red-50 border-red-100 text-red-700' : 'bg-emerald-50 border-emerald-100 text-emerald-700'}`}>
                             <div className={`w-2 h-2 rounded-full ${bannerTone === 'error' ? 'bg-red-500' : 'bg-emerald-500'}`} />
                             <p className="text-sm font-bold leading-tight">{statusMessage}</p>
                         </div>
                     )}
 
-                    {!registrationDone ? (
-                        <form className="space-y-6" onSubmit={handleSubmit}>
+                    <form className="space-y-6" onSubmit={handleSubmit}>
                             <div className="space-y-5">
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-600 transition-colors">
@@ -174,34 +157,7 @@ const Register = () => {
                             >
                                 {submitting ? t("auth.creatingAccount") : t("auth.register")}
                             </button>
-                        </form>
-                    ) : (
-                        <div className="text-center animate-in zoom-in-95 duration-500">
-                            <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <FaEnvelope className="text-3xl" />
-                            </div>
-                            <h3 className="text-2xl font-bold text-slate-900 mb-4">{t('auth.checkEmailTitle')}</h3>
-                            <p className="text-slate-500 mb-8 leading-relaxed font-medium">
-                                {statusMessage}
-                            </p>
-                            
-                            <div className="space-y-4">
-                                <button
-                                    onClick={handleResendVerification}
-                                    disabled={resendingVerification}
-                                    className="w-full h-14 rounded-2xl bg-emerald-600 text-white font-bold transition-all hover:bg-emerald-700 active:scale-95 disabled:opacity-50"
-                                >
-                                    {resendingVerification ? t("auth.resendingVerification") : t("auth.resendVerification")}
-                                </button>
-                                <button
-                                    onClick={() => navigate('/login')}
-                                    className="w-full h-14 rounded-2xl bg-slate-50 text-slate-600 font-bold hover:bg-slate-100 transition-colors"
-                                >
-                                    {t("auth.goToLogin")}
-                                </button>
-                            </div>
-                        </div>
-                    )}
+                    </form>
 
                     <div className="mt-10 pt-8 border-t border-slate-50 text-center">
                         <p className="text-slate-500 font-medium">
