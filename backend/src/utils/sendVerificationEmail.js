@@ -5,23 +5,17 @@ const requiredEnv = ["SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS"];
 const getMissingEnv = () => requiredEnv.filter((key) => !process.env[key]);
 
 const createSmtpTransporter = () => {
-    const config = {
+    const port = Number(process.env.SMTP_PORT || 587);
+
+    return nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port,
+        secure: port === 465,
         auth: {
             user: process.env.SMTP_USER,
             pass: process.env.SMTP_PASS
         }
-    };
-
-    // If using Gmail, use the built-in service config
-    if (process.env.SMTP_HOST === "smtp.gmail.com") {
-        config.service = "gmail";
-    } else {
-        config.host = process.env.SMTP_HOST;
-        config.port = Number(process.env.SMTP_PORT);
-        config.secure = config.port === 465;
-    }
-
-    return nodemailer.createTransport(config);
+    });
 };
 
 const sendVerificationEmail = async (toEmail, token) => {
